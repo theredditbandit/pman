@@ -2,7 +2,9 @@ package cmd
 
 import (
 	"fmt"
+	"log"
 	"os"
+	"path/filepath"
 	"projman/pkg"
 
 	"github.com/spf13/cobra"
@@ -18,7 +20,8 @@ var initCmd = &cobra.Command{
     Running projman init <dirname> is the same as running: projman add <dirname>/*
     `,
 	Run: func(cmd *cobra.Command, args []string) {
-		projIdentifier := "README.md" // the file which identifies a project directory
+		// the file which identifies a project directory
+		projIdentifier := "README.md" // TODO : make this configurable using a flag
 		if len(args) != 1 {
 			fmt.Println("Please provide a directory name")
 			return
@@ -31,19 +34,25 @@ var initCmd = &cobra.Command{
 			fmt.Printf("%s is a file and not a directory \n", dirname)
 			return
 		}
-		fmt.Printf("Indexing %s. . .\n", dirname)
 		projDirs, err := pkg.IndexDir(dirname, projIdentifier)
 		if err != nil {
 			fmt.Println(err)
 			return
 		}
-		fmt.Printf("projDirs: %v\n", projDirs)
-        for k, v := range projDirs {
-            fmt.Println("Project Name: ", k)
-            fmt.Println("Project Path: ", v)
-            fmt.Println("=====================================")
-        }
-
+		fmt.Printf("Indexed %d project directories . . .\n\n", len(projDirs))
+		for k, v := range projDirs {
+			fmt.Println("Project Name: ", filepath.Base(k))
+			fmt.Println("Project Path: ", k)
+			fmt.Println("Project Status: ", v)
+			fmt.Println("========================================")
+		}
+        dbPath := pkg.GetDB("projects.db")
+		err = pkg.WriteToDB(projDirs, dbPath)
+		if err != nil {
+			log.Fatal(err)
+			return
+		}
+        fmt.Println("written to ", dbPath)
 	},
 }
 
