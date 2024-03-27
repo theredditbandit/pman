@@ -23,8 +23,7 @@ var statusCmd = &cobra.Command{
 			fmt.Println(err)
 			return
 		}
-		projStatus := pkg.StatusMap[status]
-		fmt.Printf("Status of %s : %s\n", projName, projStatus)
+		fmt.Printf("Status of %s : %s\n", projName, status)
 	},
 }
 
