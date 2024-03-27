@@ -4,10 +4,10 @@ import (
 	"os"
 	"path/filepath"
 )
+
 // IndexDir indexes a directory for multiple projects subdirectories
-func IndexDir(path, identifier string) (map[string]int, error) { 
-    // TODO : skip indexing the repo if it is already indexed in the db
-	projDirs := make(map[string]int)
+func IndexDir(path, identifier string) (map[string]string, error) {
+	projDirs := make(map[string]string)
 	err := filepath.Walk(path, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
@@ -18,8 +18,8 @@ func IndexDir(path, identifier string) (map[string]int, error) {
 		if !info.IsDir() && info.Name() == identifier {
 			pname := filepath.Dir(path)
 			absPath, _ := filepath.Abs(pname)
-			projDirs[absPath] = 0
-			return filepath.SkipDir // skip the directory once we find the identifier
+			projDirs[absPath] = "0"
+			return filepath.SkipDir
 		}
 		return nil
 	})
