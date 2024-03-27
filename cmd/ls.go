@@ -3,7 +3,7 @@ package cmd
 import (
 	"fmt"
 	"log"
-	"projman/pkg"
+	"pman/pkg"
 
 	"github.com/spf13/cobra"
 )
@@ -12,7 +12,7 @@ var lsCmd = &cobra.Command{
 	Use:   "ls",
 	Short: "List all indexed projects along with their status",
 	Long: `List all indexed projects along with their status
-    Usage : projman ls
+    Usage : pman ls
     `,
 	Run: func(cmd *cobra.Command, args []string) {
 		data, err := pkg.GetAllRecords(StatusBucket)

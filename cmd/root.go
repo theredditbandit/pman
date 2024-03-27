@@ -7,7 +7,7 @@ import (
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "projman",
+	Use:   "pman",
 	Short: "The final project manager",
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) == 0 {

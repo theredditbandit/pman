@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"fmt"
-	"projman/pkg"
+	"pman/pkg"
 
 	"github.com/spf13/cobra"
 )

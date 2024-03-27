@@ -41,7 +41,7 @@ func getDBLoc(dbname string) string {
 	if err != nil {
 		panic(err)
 	}
-	dbPath := filepath.Join(usr.HomeDir, ".local", "share", "projman", dbname)
+	dbPath := filepath.Join(usr.HomeDir, ".local", "share", "pman", dbname)
 	if _, err := os.Stat(filepath.Dir(dbPath)); os.IsNotExist(err) {
 		os.MkdirAll(filepath.Dir(dbPath), 0755)
 	}

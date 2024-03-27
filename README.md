@@ -1,4 +1,4 @@
-# Projman
+# pman
 
 The final project manager. 
 

@@ -1,6 +1,6 @@
 package main
 
-import "projman/cmd"
+import "pman/cmd"
 
 func main() {
 	cmd.Execute()

@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	"projman/pkg"
+	"pman/pkg"
 
 	"github.com/spf13/cobra"
 )
@@ -20,7 +20,7 @@ var initCmd = &cobra.Command{
 
     It will index any folder which contains a README.md as a project directory.
 
-    Running projman init <dirname> is the same as running: projman add <dirname>/*
+    Running pman init <dirname> is the same as running: pman add <dirname>/*
     `,
 	Run: func(cmd *cobra.Command, args []string) {
 		// the file which identifies a project directory

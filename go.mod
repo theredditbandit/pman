@@ -1,4 +1,4 @@
-module projman
+module pman
 
 go 1.22.0
 
