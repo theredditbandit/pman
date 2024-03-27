@@ -1,9 +1,8 @@
 package cmd
 
 import (
-	"fmt"
-
 	"github.com/spf13/cobra"
+	"pman/pkg"
 )
 
 var addCmd = &cobra.Command{
@@ -13,7 +12,7 @@ var addCmd = &cobra.Command{
     The directory will not be added if it does not contain a README.md.
     `,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("add called")
+		pkg.InitDirs(args)
 	},
 }
 
