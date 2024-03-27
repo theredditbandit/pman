@@ -6,6 +6,9 @@ import (
 	"github.com/spf13/cobra"
 )
 
+const StatusBucket = "projects"
+const ProjectPaths = "projectPaths"
+
 var rootCmd = &cobra.Command{
 	Use:   "pman",
 	Short: "The final project manager",

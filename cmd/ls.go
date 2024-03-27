@@ -7,7 +7,7 @@ import (
 
 	"github.com/spf13/cobra"
 )
-
+// TODO : Pretty print this in the future
 var lsCmd = &cobra.Command{
 	Use:   "ls",
 	Short: "List all indexed projects along with their status",
