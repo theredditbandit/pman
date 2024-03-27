@@ -10,31 +10,33 @@ import (
 	bolt "go.etcd.io/bbolt"
 )
 
-func WriteToDB(projLocMap map[string]int, path string) error {
-	db, err := bolt.Open(path, 0600, nil) // create the database if it doesn't exist then open it
+const DBName = "projects.db"
+
+// WriteToDB writes the data to the specified bucket in the database
+func WriteToDB(data map[string]string, bucketName string) error {
+	db, err := bolt.Open(getDBLoc(DBName), 0600, nil) // create the database if it doesn't exist then open it
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer db.Close()
 	err = db.Update(func(tx *bolt.Tx) error {
-		bucket, err := tx.CreateBucketIfNotExists([]byte("projects"))
+		bucket, err := tx.CreateBucketIfNotExists([]byte(bucketName))
 		if err != nil {
 			return err
 		}
-		for k, v := range projLocMap {
-			err = bucket.Put([]byte(k), []byte(fmt.Sprint(v)))
+		for k, v := range data {
+			err = bucket.Put([]byte(k), []byte(v))
 			if err != nil {
 				return err
 			}
 		}
 		return nil
-
 	})
 	return err
 }
 
-// GetDB returns the path to the database file , creating the directory if it doesn't exist
-func GetDB(dbname string) string {
+// getDBLoc returns the path to the database file , creating the directory if it doesn't exist
+func getDBLoc(dbname string) string {
 	usr, err := user.Current()
 	if err != nil {
 		panic(err)
@@ -46,11 +48,27 @@ func GetDB(dbname string) string {
 	return dbPath
 }
 
-
-func GetRecord(key string) int {
-	return 0
-}
-
-func Exists(key string) bool {
-	return false
+func GetRecord(key string, bucketName string) (string, error) {
+	var rec string
+	db, err := bolt.Open(getDBLoc(DBName), 0600, nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
+	err = db.View(func(tx *bolt.Tx) error {
+		bucket := tx.Bucket([]byte(bucketName))
+		if bucket == nil {
+			return fmt.Errorf("Bucket not found")
+		}
+		v := bucket.Get([]byte(key))
+		if v == nil {
+			return fmt.Errorf("Key not found")
+		}
+		rec = string(v)
+		return nil
+	})
+	if err != nil {
+		return "", nil
+	}
+	return rec, nil
 }
