@@ -48,6 +48,7 @@ func getDBLoc(dbname string) string {
 	return dbPath
 }
 
+// GetRecord returns the value of the key from the specified bucket
 func GetRecord(key string, bucketName string) (string, error) {
 	var rec string
 	db, err := bolt.Open(getDBLoc(DBName), 0600, nil)
@@ -71,4 +72,29 @@ func GetRecord(key string, bucketName string) (string, error) {
 		return "", nil
 	}
 	return rec, nil
+}
+
+// GetAllRecords returns all the records from the specified bucket as a dictionary
+func GetAllRecords(bucketName string) (map[string]string, error) {
+	db, err := bolt.Open(getDBLoc(DBName), 0600, nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
+	records := make(map[string]string)
+	err = db.View(func(tx *bolt.Tx) error {
+		bucket := tx.Bucket([]byte(bucketName))
+		if bucket == nil {
+			return fmt.Errorf("Bucket not found. \n This could be because no project dir has been initialised yet.")
+		}
+		err := bucket.ForEach(func(k, v []byte) error {
+			records[string(k)] = string(v)
+			return nil
+		})
+		return err
+	})
+	if err != nil {
+		return nil, err
+	}
+	return records, nil
 }
