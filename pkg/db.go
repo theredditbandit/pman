@@ -98,3 +98,25 @@ func GetAllRecords(bucketName string) (map[string]string, error) {
 	}
 	return records, nil
 }
+
+// UpdateRec updates the value of the key in the specified bucket , usually used to update the status of a project
+func UpdateRec(key, val, bucketName string) error {
+	db, err := bolt.Open(getDBLoc(DBName), 0600, nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
+	err = db.Update(func(tx *bolt.Tx) error {
+		bucket := tx.Bucket([]byte(bucketName))
+		if bucket == nil {
+			return fmt.Errorf("Bucket not found")
+		}
+		v := bucket.Get([]byte(key))
+		if v == nil {
+			return fmt.Errorf("Project not found")
+		}
+		err := bucket.Put([]byte(key), []byte(val))
+		return err
+	})
+	return err
+}
