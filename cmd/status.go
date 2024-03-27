@@ -23,7 +23,7 @@ var statusCmd = &cobra.Command{
 			fmt.Println(err)
 			return
 		}
-		fmt.Printf("Status of %s : %s\n", projName, status)
+		fmt.Printf("Status of %s : %s\n", projName, pkg.Title(status))
 	},
 }
 

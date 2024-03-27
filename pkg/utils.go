@@ -1,5 +1,7 @@
 package pkg
 
+import "strings"
+
 var SupportedStatus = []string{
 	"Indexed",
 	"Started",
@@ -9,4 +11,8 @@ var SupportedStatus = []string{
 	"Deleted",
 	"Ongoing",
 	"Not Started",
+}
+
+func Title(s string) string {
+	return strings.Title(s)
 }

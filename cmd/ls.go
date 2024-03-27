@@ -7,6 +7,7 @@ import (
 
 	"github.com/spf13/cobra"
 )
+
 // TODO : Pretty print this in the future
 var lsCmd = &cobra.Command{
 	Use:   "ls",
@@ -20,7 +21,7 @@ var lsCmd = &cobra.Command{
 			log.Fatal(err)
 		}
 		for k, v := range data {
-            fmt.Println(v, " : ", k)
+			fmt.Println(pkg.Title(v), " : ", k)
 		}
 	},
 }
