@@ -10,6 +10,9 @@ import (
 	"github.com/spf13/cobra"
 )
 
+const StatusBucket = "projects"
+const ProjectPaths = "projectPaths"
+
 var initCmd = &cobra.Command{
 	Use:   "init",
 	Short: "Takes exactly 1 argument, a directory name, and initializes it as a project directory.",
@@ -40,19 +43,22 @@ var initCmd = &cobra.Command{
 			return
 		}
 		fmt.Printf("Indexed %d project directories . . .\n\n", len(projDirs))
-		for k, v := range projDirs {
-			fmt.Println("Project Name: ", filepath.Base(k))
-			fmt.Println("Project Path: ", k)
-			fmt.Println("Project Status: ", v)
-			fmt.Println("========================================")
+		projectStatusMap := make(map[string]string)
+		projectPathMap := make(map[string]string)
+		for k, v := range projDirs { // k : full project path, v : project status ,
+			projectStatusMap[filepath.Base(k)] = v // filepath.Base(k) : project name
+			projectPathMap[filepath.Base(k)] = k
 		}
-        dbPath := pkg.GetDB("projects.db")
-		err = pkg.WriteToDB(projDirs, dbPath)
+		err = pkg.WriteToDB(projectStatusMap, StatusBucket)
 		if err != nil {
 			log.Fatal(err)
 			return
 		}
-        fmt.Println("written to ", dbPath)
+		err = pkg.WriteToDB(projectPathMap, ProjectPaths)
+		if err != nil {
+			log.Fatal(err)
+			return
+		}
 	},
 }
 
