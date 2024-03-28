@@ -85,7 +85,7 @@ func GetAllRecords(bucketName string) (map[string]string, error) {
 	err = db.View(func(tx *bolt.Tx) error {
 		bucket := tx.Bucket([]byte(bucketName))
 		if bucket == nil {
-			return fmt.Errorf("Bucket not found. \n This could be because no project dir has been initialised yet.")
+			return fmt.Errorf("Database not found. \n This could be because no project dir has been initialised yet.")
 		}
 		err := bucket.ForEach(func(k, v []byte) error {
 			records[string(k)] = string(v)
@@ -118,5 +118,10 @@ func UpdateRec(key, val, bucketName string) error {
 		err := bucket.Put([]byte(key), []byte(val))
 		return err
 	})
+	return err
+}
+
+func DeleteDb() error {
+	err := os.Remove(getDBLoc(DBName))
 	return err
 }
