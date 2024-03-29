@@ -2,10 +2,9 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/spf13/cobra"
 	"log"
 	"pman/pkg"
-
-	"github.com/spf13/cobra"
 )
 
 // TODO : Pretty print this in the future
@@ -16,19 +15,22 @@ var lsCmd = &cobra.Command{
     Usage : pman ls
     `,
 	Run: func(cmd *cobra.Command, args []string) {
+		filterFlag, _ := cmd.Flags().GetString("f")
 		data, err := pkg.GetAllRecords(StatusBucket)
 		if err != nil {
 			log.Fatal(err)
 		}
-		for k, v := range data {
-			fmt.Println(pkg.Title(v), " : ", k)
+		if filterFlag != "" {
+			fmt.Println("Filtering by status : ", filterFlag)
+			data := pkg.FilterByStatus(data, filterFlag)
+			pkg.PrintData(data)
+			return
 		}
+		pkg.PrintData(data)
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(lsCmd)
-	// TODO: add -f filter flag to only list projects with a certain status
-	// to implement a bucket will be created that maps a status to all the projects with that status
-	// will have to refactor the WriteToDB function to accept an intrface as the data parameter
+	lsCmd.Flags().String("f", "", "Filter projects by status. Usage : pman ls -f <status>")
 }

@@ -1,6 +1,9 @@
 package pkg
 
-import "strings"
+import (
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
+)
 
 var SupportedStatus = []string{
 	"Indexed",
@@ -14,5 +17,22 @@ var SupportedStatus = []string{
 }
 
 func Title(s string) string {
-	return strings.Title(s)
+	c := cases.Title(language.English)
+	return c.String(s)
+}
+
+func FilterByStatus(data map[string]string, status string) map[string]string {
+	filteredData := make(map[string]string)
+	for k, v := range data {
+		if v == status {
+			filteredData[k] = v
+		}
+	}
+	return filteredData
+}
+
+func PrintData(data map[string]string) {
+	for k, v := range data {
+		println(Title(v), " : ", k)
+	}
 }
