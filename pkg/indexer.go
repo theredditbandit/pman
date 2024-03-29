@@ -63,7 +63,7 @@ func indexDir(path, identifier string) (map[string]string, error) {
 		if !info.IsDir() && info.Name() == identifier {
 			pname := filepath.Dir(path)
 			absPath, _ := filepath.Abs(pname)
-			projDirs[absPath] = "Indexed"
+			projDirs[absPath] = "indexed"
 			return filepath.SkipDir
 		}
 		return nil
