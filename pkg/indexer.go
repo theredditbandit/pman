@@ -10,10 +10,10 @@ import (
 const StatusBucket = "projects"
 const ProjectPaths = "projectPaths"
 
-//InitDirs indexes a directory for project directories and writes the data to the db
+// InitDirs indexes a directory for project directories and writes the data to the db
 func InitDirs(args []string) {
 	// the file which identifies a project directory
-	projIdentifier := "README.md" // TODO : make this configurable using a flag
+	projIdentifier := "README.md"
 	if len(args) != 1 {
 		fmt.Println("Please provide a directory name")
 		return

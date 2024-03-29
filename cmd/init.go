@@ -22,7 +22,4 @@ var initCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(initCmd)
-
-	// TODO : support a --remote flag as well to store the remote repo url in the db as well
-	// this url can then be used to clone the repo
 }

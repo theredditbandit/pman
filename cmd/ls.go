@@ -7,7 +7,6 @@ import (
 	"pman/pkg"
 )
 
-// TODO : Pretty print this in the future
 var lsCmd = &cobra.Command{
 	Use:   "ls",
 	Short: "List all indexed projects along with their status",
