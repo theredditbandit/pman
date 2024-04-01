@@ -28,7 +28,12 @@ var infoCmd = &cobra.Command{
 		if err != nil {
 			fmt.Printf("err: %v\n", err)
 		}
-		out, err := glamour.Render(string(infoData), "dark")
+		r, _ := glamour.NewTermRenderer(
+			glamour.WithAutoStyle(),
+			glamour.WithWordWrap(120),
+			glamour.WithAutoStyle(),
+		)
+		out, err := r.Render(string(infoData))
 		fmt.Print(out)
 	},
 }
