@@ -48,7 +48,7 @@ func getDBLoc(dbname string) string {
 	return dbPath
 }
 
-// GetRecord returns the value of the key from the specified bucket
+// GetRecord returns the value of the key from the specified bucket , and error if it does not exist
 func GetRecord(key string, bucketName string) (string, error) {
 	var rec string
 	db, err := bolt.Open(getDBLoc(DBName), 0600, nil)
