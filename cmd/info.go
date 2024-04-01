@@ -12,7 +12,7 @@ import (
 
 var infoCmd = &cobra.Command{
 	Use:   "info",
-	Short: "The info command prints the README.md file of the specified project.",
+	Short: "The info command pretty prints the README.md file present at the root of the specified project.",
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) != 1 {
 			fmt.Println("Please provde a project name")
