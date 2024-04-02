@@ -69,7 +69,7 @@ func GetRecord(key string, bucketName string) (string, error) {
 		return nil
 	})
 	if err != nil {
-		return "", nil
+		return "", err
 	}
 	return rec, nil
 }

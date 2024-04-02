@@ -16,11 +16,16 @@ var infoCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) != 1 {
 			fmt.Println("Please provde a project name")
+			return
 		}
-		project := args[0]
-		path, err := db.GetRecord(project, ProjectPathBucket)
+		projectName := args[0]
+		actualName, err := db.GetRecord(projectName, ProjectAliasBucket)
+		if err == nil {
+			projectName = actualName
+		}
+		path, err := db.GetRecord(projectName, ProjectPathBucket)
 		if err != nil {
-			fmt.Printf("project: %v not a valid project\n", project)
+			fmt.Printf("project: %v not a valid project\n", projectName)
 			return
 		}
 		infoPath := filepath.Join(path, "README.md")
