@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"pman/pkg/db"
 )
 
 const StatusBucket = "projects"
@@ -38,12 +39,12 @@ func InitDirs(args []string) {
 		projectStatusMap[filepath.Base(k)] = v // filepath.Base(k) : project name
 		projectPathMap[filepath.Base(k)] = k
 	}
-	err = WriteToDB(projectStatusMap, StatusBucket)
+	err = db.WriteToDB(projectStatusMap, StatusBucket)
 	if err != nil {
 		log.Fatal(err)
 		return
 	}
-	err = WriteToDB(projectPathMap, ProjectPaths)
+	err = db.WriteToDB(projectPathMap, ProjectPaths)
 	if err != nil {
 		log.Fatal(err)
 		return

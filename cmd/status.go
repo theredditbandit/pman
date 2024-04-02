@@ -3,6 +3,7 @@ package cmd
 import (
 	"fmt"
 	"pman/pkg"
+	"pman/pkg/db"
 
 	"github.com/spf13/cobra"
 )
@@ -18,7 +19,7 @@ var statusCmd = &cobra.Command{
 			return
 		}
 		projName := args[0]
-		status, err := pkg.GetRecord(projName, StatusBucket)
+		status, err := db.GetRecord(projName, StatusBucket)
 		if err != nil {
 			fmt.Println(err)
 			return

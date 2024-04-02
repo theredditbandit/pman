@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"pman/pkg"
+	"pman/pkg/db"
 
 	"github.com/charmbracelet/glamour"
 	"github.com/spf13/cobra"
@@ -18,7 +18,7 @@ var infoCmd = &cobra.Command{
 			fmt.Println("Please provde a project name")
 		}
 		project := args[0]
-		path, err := pkg.GetRecord(project, ProjectPathBucket)
+		path, err := db.GetRecord(project, ProjectPathBucket)
 		if err != nil {
 			fmt.Printf("project: %v not a valid project\n", project)
 			return
