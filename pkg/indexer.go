@@ -33,7 +33,7 @@ func InitDirs(args []string) {
 		fmt.Println(err)
 		return
 	}
-	fmt.Printf("Indexed %d project directories . . .\n\n", len(projDirs))
+	fmt.Printf("Indexed %d project directories . . .\n", len(projDirs))
 	projectStatusMap := make(map[string]string)
 	projectPathMap := make(map[string]string)
 	for k, v := range projDirs { // k : full project path, v : project status ,
