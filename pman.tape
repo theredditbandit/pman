@@ -58,6 +58,12 @@ Sleep 1s
 Type "clear"
 Enter
 Sleep 500ms
+Type "pman info wc"
+Enter
+Sleep 5s
+Type "clear"
+Enter
+Sleep 500ms
 Type "pman "
 Enter
 Sleep 5s

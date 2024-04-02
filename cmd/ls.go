@@ -5,6 +5,7 @@ import (
 	"github.com/spf13/cobra"
 	"log"
 	"pman/pkg"
+	"pman/pkg/db"
 )
 
 var lsCmd = &cobra.Command{
@@ -15,7 +16,7 @@ var lsCmd = &cobra.Command{
     `,
 	Run: func(cmd *cobra.Command, args []string) {
 		filterFlag, _ := cmd.Flags().GetString("f")
-		data, err := pkg.GetAllRecords(StatusBucket)
+		data, err := db.GetAllRecords(StatusBucket)
 		if err != nil {
 			log.Fatal(err)
 		}

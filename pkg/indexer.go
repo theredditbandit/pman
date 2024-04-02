@@ -5,10 +5,12 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"pman/pkg/db"
 )
 
 const StatusBucket = "projects"
 const ProjectPaths = "projectPaths"
+const ProjectAliasBucket = "projectAliases"
 
 // InitDirs indexes a directory for project directories and writes the data to the db
 func InitDirs(args []string) {
@@ -31,19 +33,19 @@ func InitDirs(args []string) {
 		fmt.Println(err)
 		return
 	}
-	fmt.Printf("Indexed %d project directories . . .\n\n", len(projDirs))
+	fmt.Printf("Indexed %d project directories . . .\n", len(projDirs))
 	projectStatusMap := make(map[string]string)
 	projectPathMap := make(map[string]string)
 	for k, v := range projDirs { // k : full project path, v : project status ,
 		projectStatusMap[filepath.Base(k)] = v // filepath.Base(k) : project name
 		projectPathMap[filepath.Base(k)] = k
 	}
-	err = WriteToDB(projectStatusMap, StatusBucket)
+	err = db.WriteToDB(projectStatusMap, StatusBucket)
 	if err != nil {
 		log.Fatal(err)
 		return
 	}
-	err = WriteToDB(projectPathMap, ProjectPaths)
+	err = db.WriteToDB(projectPathMap, ProjectPaths)
 	if err != nil {
 		log.Fatal(err)
 		return

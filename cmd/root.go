@@ -7,7 +7,8 @@ import (
 )
 
 const StatusBucket = "projects"
-const ProjectPaths = "projectPaths"
+const ProjectPathBucket = "projectPaths"
+const ProjectAliasBucket = "projectAliases"
 
 var rootCmd = &cobra.Command{
 	Use:   "pman",

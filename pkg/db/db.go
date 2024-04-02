@@ -1,4 +1,4 @@
-package pkg
+package db
 
 import (
 	"fmt"
@@ -35,6 +35,30 @@ func WriteToDB(data map[string]string, bucketName string) error {
 	return err
 }
 
+func DeleteFromDb(key string, bucketName string) error {
+	db, err := bolt.Open(getDBLoc(DBName), 0600, nil) // create the database if it doesn't exist then open it
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
+	err = db.Update(func(tx *bolt.Tx) error {
+		bucket := tx.Bucket([]byte(bucketName))
+		if bucket == nil {
+			return fmt.Errorf("bucket %s not found", bucketName)
+		}
+		// val := bucket.Get([]byte(key))
+		// if val == nil {
+		// 	return fmt.Errorf("%s does not exist inside the db", key)
+		// }
+		err := bucket.Delete([]byte(key))
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+	return err
+}
+
 // getDBLoc returns the path to the database file , creating the directory if it doesn't exist
 func getDBLoc(dbname string) string {
 	usr, err := user.Current()
@@ -48,7 +72,7 @@ func getDBLoc(dbname string) string {
 	return dbPath
 }
 
-// GetRecord returns the value of the key from the specified bucket
+// GetRecord returns the value of the key from the specified bucket , and error if it does not exist
 func GetRecord(key string, bucketName string) (string, error) {
 	var rec string
 	db, err := bolt.Open(getDBLoc(DBName), 0600, nil)
@@ -69,7 +93,7 @@ func GetRecord(key string, bucketName string) (string, error) {
 		return nil
 	})
 	if err != nil {
-		return "", nil
+		return "", err
 	}
 	return rec, nil
 }

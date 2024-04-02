@@ -1,8 +1,10 @@
 package pkg
 
 import (
+	"fmt"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
+	"pman/pkg/db"
 )
 
 var SupportedStatus = []string{
@@ -33,6 +35,11 @@ func FilterByStatus(data map[string]string, status string) map[string]string {
 
 func PrintData(data map[string]string) {
 	for k, v := range data {
-		println(Title(v), " : ", k)
+		alias, err := db.GetRecord(k, ProjectAliasBucket)
+		if err == nil {
+			fmt.Printf("%s : %s (%s) \n", Title(v), k, alias)
+		} else {
+			fmt.Printf("%s : %s  \n", Title(v), k)
+		}
 	}
 }
