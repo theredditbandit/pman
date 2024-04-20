@@ -2,10 +2,12 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/spf13/cobra"
 	"log"
 	"pman/pkg"
 	"pman/pkg/db"
+	"pman/pkg/ui"
+
+	"github.com/spf13/cobra"
 )
 
 var lsCmd = &cobra.Command{
@@ -23,10 +25,14 @@ var lsCmd = &cobra.Command{
 		if filterFlag != "" {
 			fmt.Println("Filtering by status : ", filterFlag)
 			data := pkg.FilterByStatus(data, filterFlag)
-			pkg.PrintData(data)
+			_ = data
+			ui.RenderTable(data)
+			// ui.Pikachu()
 			return
 		}
-		pkg.PrintData(data)
+		ui.RenderTable(data)
+		// ui.Pikachu()
+
 	},
 }
 

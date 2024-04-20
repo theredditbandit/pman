@@ -7,18 +7,7 @@ import (
 	"pman/pkg/db"
 )
 
-var SupportedStatus = []string{
-	"Indexed",
-	"Started",
-	"Paused",
-	"Completed",
-	"Aborted",
-	"Deleted",
-	"Ongoing",
-	"Not Started",
-}
-
-func Title(s string) string {
+func TitleCase(s string) string {
 	c := cases.Title(language.English)
 	return c.String(s)
 }
@@ -33,13 +22,14 @@ func FilterByStatus(data map[string]string, status string) map[string]string {
 	return filteredData
 }
 
+// Deprecated: Use ui.RenderTable instead
 func PrintData(data map[string]string) {
 	for k, v := range data {
 		alias, err := db.GetRecord(k, ProjectAliasBucket)
 		if err == nil {
-			fmt.Printf("%s : %s (%s) \n", Title(v), k, alias)
+			fmt.Printf("%s : %s (%s) \n", TitleCase(v), k, alias)
 		} else {
-			fmt.Printf("%s : %s  \n", Title(v), k)
+			fmt.Printf("%s : %s  \n", TitleCase(v), k)
 		}
 	}
 }

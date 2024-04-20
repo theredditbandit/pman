@@ -46,10 +46,6 @@ func DeleteFromDb(key string, bucketName string) error {
 		if bucket == nil {
 			return fmt.Errorf("bucket %s not found", bucketName)
 		}
-		// val := bucket.Get([]byte(key))
-		// if val == nil {
-		// 	return fmt.Errorf("%s does not exist inside the db", key)
-		// }
 		err := bucket.Delete([]byte(key))
 		if err != nil {
 			return err
@@ -87,7 +83,7 @@ func GetRecord(key string, bucketName string) (string, error) {
 		}
 		v := bucket.Get([]byte(key))
 		if v == nil {
-			return fmt.Errorf("Key not found")
+			return fmt.Errorf("Key not found in db\n")
 		}
 		rec = string(v)
 		return nil

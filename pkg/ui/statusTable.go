@@ -2,44 +2,67 @@ package ui
 
 import (
 	"fmt"
-	"pman/pkg"
-	"pman/pkg/db"
-
 	"github.com/charmbracelet/lipgloss"
 	"github.com/charmbracelet/lipgloss/table"
+	"os"
+	"pman/pkg"
+	"pman/pkg/db"
+	"sort"
 )
 
-// RenderTable: renders the given data as a pretty table
-func RenderTable(data map[string]string) error { // FIX : see if you can always print the data in the same order
-	var rows [][]string
-	for k, v := range data {
-		alias, err := db.GetRecord(k, pkg.ProjectAliasBucket)
+// RenderTable: renders the given data as a table
+func RenderTable(data map[string]string) error {
+	var TableData [][]string
+	for p, status := range data {
+		alias, err := db.GetRecord(p, pkg.ProjectAliasBucket)
 		if err == nil {
-			pname := fmt.Sprintf("%s (%s)", k, alias)
-			row := []string{pkg.Title(v), pname} // Status | prjectName (alias)
-			rows = append(rows, row)
+			pname := fmt.Sprintf("%s (%s)", p, alias)
+			row := []string{pkg.TitleCase(status), pname} // Status | prjectName (alias)
+			TableData = append(TableData, row)
 		} else {
-			row := []string{pkg.Title(v), k} // Status | prjectName
-			rows = append(rows, row)
+			row := []string{pkg.TitleCase(status), p} // Status | prjectName
+			TableData = append(TableData, row)
 		}
 	}
-	CompletedStyle := lipgloss.NewStyle().Background(lipgloss.Color("#cb85c"))
-	defaultStyle := lipgloss.NewStyle().Background(lipgloss.Color("#000000")).Foreground(lipgloss.Color("#FFFFFF"))
+	sort.Slice(TableData, func(i, j int) bool {
+		valI := TableData[i][1]
+		valJ := TableData[j][1]
+		return valI < valJ
+	})
+	re := lipgloss.NewRenderer(os.Stdout)
+	baseStyle := re.NewStyle().Padding(0, 1)
+	headerStyle := baseStyle.Copy().Foreground(lipgloss.Color("252")).Bold(true)
+	// selectedStyle := baseStyle.Copy().Foreground(lipgloss.Color("#01BE85")).Background(lipgloss.Color("#00432F"))
+	statusColors := map[string]lipgloss.Color{
+		"Idea":        lipgloss.Color("#FF87D7"),
+		"Indexed":     lipgloss.Color("#727272"),
+		"Not Started": lipgloss.Color("#D7FF87"),
+		"Ongoing":     lipgloss.Color("#00E2C7"),
+		"Started":     lipgloss.Color("#00E2C7"),
+		"Paused":      lipgloss.Color("#7D5AFC"),
+		"Completed":   lipgloss.Color("#75FBAB"),
+		"Aborted":     lipgloss.Color("#FF875F"),
+		"Default":     lipgloss.Color("#929292"),
+	}
+	headers := []string{"Project Name", "Status"}
 	t := table.New().
 		Border(lipgloss.NormalBorder()).
-		BorderStyle(lipgloss.NewStyle().Foreground(lipgloss.Color("99"))).
-		Headers("Status", "Project ").Width(60).
-		Rows(rows...).StyleFunc(func(row, col int) lipgloss.Style {
-		if row < len(rows) && row != 0 {
-			status := rows[row][col]
-			switch {
-			case status == "Completed":
-				return CompletedStyle
+		BorderStyle(re.NewStyle().Foreground(lipgloss.Color("238"))).
+		Headers(headers...).
+		Width(80).
+		Rows(TableData...).
+		StyleFunc(func(row, col int) lipgloss.Style {
+			if row == 0 {
+				return headerStyle
 			}
-		}
-		return defaultStyle
-	})
+			color, ok := statusColors[fmt.Sprint(TableData[row-1][0])]
+			if ok {
+				return baseStyle.Copy().Foreground(color)
+			} else {
+				color := statusColors["Default"]
+				return baseStyle.Copy().Foreground(color)
+			}
+		})
 	fmt.Println(t)
-
 	return nil
 }

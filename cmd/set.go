@@ -14,7 +14,7 @@ var setCmd = &cobra.Command{
     Usage:
     pman set <project_name> <status>
 
-    Common statuses: Indexed (default) , Started , Paused , Completed , Aborted , Deleted , Ongoing , Not Started
+    Common statuses: Indexed (default) ,Idea , Started , Paused , Completed , Aborted , Ongoing , Not Started
     `,
 	Run: func(cmd *cobra.Command, args []string) { // BUG : cannot set the status using the alias.
 		interactiveFlag, _ := cmd.Flags().GetBool("i") // TODO: Implement this
