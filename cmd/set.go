@@ -16,7 +16,7 @@ var setCmd = &cobra.Command{
 
     Common statuses: Indexed (default) ,Idea , Started , Paused , Completed , Aborted , Ongoing , Not Started
     `,
-	Run: func(cmd *cobra.Command, args []string) { // BUG : cannot set the status using the alias.
+	Run: func(cmd *cobra.Command, args []string) {
 		interactiveFlag, _ := cmd.Flags().GetBool("i") // TODO: Implement this
 		if interactiveFlag {
 			fmt.Println("Not implemented yet")
@@ -29,7 +29,6 @@ var setCmd = &cobra.Command{
 		var pname string
 		alias := args[0]
 		status := args[1]
-
 		project, err := db.GetRecord(alias, ProjectAliasBucket)
 		if err == nil {
 			pname = project
