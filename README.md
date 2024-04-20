@@ -5,6 +5,12 @@ pman is a command line tool to keep track of all your side projects.
 ## Why?
 I needed something to keep track of all my side projects.
 
+## Install using the go package manager
+
+```
+go get github.com/theredditbandit/pman@latest
+```
+
 ## Usage 
 
 ```
