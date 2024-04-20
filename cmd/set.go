@@ -14,10 +14,10 @@ var setCmd = &cobra.Command{
     Usage:
     pman set <project_name> <status>
 
-    Common statuses: Indexed (default) , Started , Paused , Completed , Aborted , Deleted , Ongoing , Not Started
+    Common statuses: Indexed (default) ,Idea , Started , Paused , Completed , Aborted , Ongoing , Not Started
     `,
-	Run: func(cmd *cobra.Command, args []string) {
-		interactiveFlag, _ := cmd.Flags().GetBool("i")
+	Run: func(cmd *cobra.Command, args []string) { // BUG : cannot set the status using the alias.
+		interactiveFlag, _ := cmd.Flags().GetBool("i") // TODO: Implement this
 		if interactiveFlag {
 			fmt.Println("Not implemented yet")
 			return
@@ -26,14 +26,22 @@ var setCmd = &cobra.Command{
 			fmt.Println("Please provide a directory name")
 			return
 		}
-		project := args[0]
+		var pname string
+		alias := args[0]
 		status := args[1]
-		err := db.UpdateRec(project, status, StatusBucket)
+
+		project, err := db.GetRecord(alias, ProjectAliasBucket)
+		if err == nil {
+			pname = project
+		} else {
+			pname = alias
+		}
+		err = db.UpdateRec(pname, status, StatusBucket)
 		if err != nil {
-			fmt.Println("Error updating record")
+			fmt.Println("Error updating record : ", err)
 			return
 		}
-		fmt.Printf("Project %s set to status %s\n", project, status)
+		fmt.Printf("Project %s set to status %s\n", pname, status)
 	},
 }
 

@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -18,6 +19,10 @@ var rootCmd = &cobra.Command{
 			cmd.Help()
 			return
 		}
+		interactiveFlag, _ := cmd.Flags().GetBool("i") // TODO: Implement this
+		if interactiveFlag {
+			fmt.Println("Not implemented")
+		}
 	},
 }
 
@@ -29,4 +34,5 @@ func Execute() {
 }
 
 func init() {
+	rootCmd.Flags().Bool("i", false, "Run pman interactively")
 }

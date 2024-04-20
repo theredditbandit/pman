@@ -31,9 +31,9 @@ var statusCmd = &cobra.Command{
 			return
 		}
 		if alias != "" {
-			fmt.Printf("Status of %s (%s) : %s\n", projName, alias, pkg.Title(status))
+			fmt.Printf("Status of %s (%s) : %s\n", projName, alias, pkg.TitleCase(status))
 		} else {
-			fmt.Printf("Status of %s  : %s\n", projName, pkg.Title(status))
+			fmt.Printf("Status of %s  : %s\n", projName, pkg.TitleCase(status))
 		}
 	},
 }
