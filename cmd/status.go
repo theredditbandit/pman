@@ -2,8 +2,8 @@ package cmd
 
 import (
 	"fmt"
-	"pman/pkg"
-	"pman/pkg/db"
+	"github.com/theredditbandit/pman/pkg"
+	"github.com/theredditbandit/pman/pkg/db"
 
 	"github.com/spf13/cobra"
 )

@@ -2,9 +2,8 @@ package cmd
 
 import (
 	"fmt"
-	"pman/pkg/db"
-
 	"github.com/spf13/cobra"
+	"github.com/theredditbandit/pman/pkg/db"
 )
 
 // aliasCmd represents the alias command

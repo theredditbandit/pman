@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"github.com/spf13/cobra"
-	"pman/pkg"
+	"github.com/theredditbandit/pman/pkg"
 )
 
 var addCmd = &cobra.Command{

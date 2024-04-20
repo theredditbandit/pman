@@ -1,6 +1,6 @@
 package main
 
-import "pman/cmd"
+import "github.com/theredditbandit/pman/cmd"
 
 func main() {
 	cmd.Execute()
