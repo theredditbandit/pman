@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"pman/pkg"
+	"github.com/theredditbandit/pman/pkg"
 
 	"github.com/spf13/cobra"
 )

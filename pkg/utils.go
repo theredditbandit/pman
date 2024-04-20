@@ -2,9 +2,9 @@ package pkg
 
 import (
 	"fmt"
+	"github.com/theredditbandit/pman/pkg/db"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
-	"pman/pkg/db"
 )
 
 func TitleCase(s string) string {

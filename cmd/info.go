@@ -2,9 +2,9 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/theredditbandit/pman/pkg/db"
 	"os"
 	"path/filepath"
-	"pman/pkg/db"
 
 	"github.com/charmbracelet/glamour"
 	"github.com/spf13/cobra"

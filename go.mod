@@ -1,4 +1,4 @@
-module pman
+module github.com/theredditbandit/pman
 
 go 1.22.2
 

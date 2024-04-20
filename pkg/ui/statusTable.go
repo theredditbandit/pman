@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/charmbracelet/lipgloss/table"
+	"github.com/theredditbandit/pman/pkg"
+	"github.com/theredditbandit/pman/pkg/db"
 	"os"
-	"pman/pkg"
-	"pman/pkg/db"
 	"sort"
 )
 

@@ -2,8 +2,8 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/theredditbandit/pman/pkg/db"
 	"log"
-	"pman/pkg/db"
 
 	"github.com/spf13/cobra"
 )
@@ -44,7 +44,7 @@ var delCmd = &cobra.Command{
 			log.Fatal(err)
 		}
 
-        fmt.Printf("Successfully deleted %s from the db \n",projName)
+		fmt.Printf("Successfully deleted %s from the db \n", projName)
 
 	},
 }
