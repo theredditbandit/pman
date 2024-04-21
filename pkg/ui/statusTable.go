@@ -15,12 +15,13 @@ func RenderTable(data map[string]string) error {
 	var TableData [][]string
 	for p, status := range data {
 		alias, err := db.GetRecord(p, pkg.ProjectAliasBucket)
+		lastEdited := pkg.GetLastModifiedTime(p)
 		if err == nil {
 			pname := fmt.Sprintf("%s (%s)", p, alias)
-			row := []string{pkg.TitleCase(status), pname} // Status | prjectName (alias)
+			row := []string{pkg.TitleCase(status), pname, lastEdited} // Status | prjectName (alias)
 			TableData = append(TableData, row)
 		} else {
-			row := []string{pkg.TitleCase(status), p} // Status | prjectName
+			row := []string{pkg.TitleCase(status), p, lastEdited} // Status | prjectName
 			TableData = append(TableData, row)
 		}
 	}
@@ -44,12 +45,12 @@ func RenderTable(data map[string]string) error {
 		"Aborted":     lipgloss.Color("#FF875F"),
 		"Default":     lipgloss.Color("#929292"),
 	}
-	headers := []string{"Project Name", "Status"}
+	headers := []string{"Project Name", "Status", "Last Edited"}
 	t := table.New().
 		Border(lipgloss.NormalBorder()).
 		BorderStyle(re.NewStyle().Foreground(lipgloss.Color("238"))).
 		Headers(headers...).
-		Width(80).
+		Width(100).
 		Rows(TableData...).
 		StyleFunc(func(row, col int) lipgloss.Style {
 			if row == 0 {
