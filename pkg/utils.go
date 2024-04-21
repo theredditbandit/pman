@@ -62,9 +62,9 @@ func GetLastModifiedTime(pname string) string {
 	}
 	switch fmt.Sprint(lastModTime.Date()) {
 	case fmt.Sprint(today.Date()):
-		return "Today"
+		return fmt.Sprintf("Today %s", lastModTime.Format("15:04"))
 	case fmt.Sprint(today.AddDate(0, 0, -1).Date()):
-		return "Yesterday"
+		return fmt.Sprintf("Yesterday %s", lastModTime.Format("17:00"))
 	}
-	return fmt.Sprint(lastModTime.Date())
+	return fmt.Sprint(lastModTime.Format("02 Jan 06 15:04"))
 }

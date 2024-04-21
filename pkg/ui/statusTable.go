@@ -59,7 +59,7 @@ func RenderTable(data map[string]string) error {
 		Border(lipgloss.NormalBorder()).
 		BorderStyle(re.NewStyle().Foreground(lipgloss.Color("238"))).
 		Headers(headers...).
-		Width(100).
+		Width(90).
 		Rows(TableData...).
 		StyleFunc(func(row, col int) lipgloss.Style {
 			if row == 0 {
