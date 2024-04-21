@@ -38,7 +38,7 @@ var infoCmd = &cobra.Command{
 			glamour.WithWordWrap(120),
 			glamour.WithAutoStyle(),
 		)
-		out, err := r.Render(string(infoData))
+		out, _ := r.Render(string(infoData))
 		fmt.Print(out)
 	},
 }

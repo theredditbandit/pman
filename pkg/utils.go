@@ -2,6 +2,10 @@ package pkg
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
+	"time"
+
 	"github.com/theredditbandit/pman/pkg/db"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
@@ -32,4 +36,35 @@ func PrintData(data map[string]string) {
 			fmt.Printf("%s : %s  \n", TitleCase(v), k)
 		}
 	}
+}
+
+func GetLastModifiedTime(pname string) string {
+	var lastModTime time.Time
+	var lastModFile string
+	today := time.Now()
+	_ = lastModFile
+	pPath, err := db.GetRecord(pname, ProjectPaths)
+	if err != nil {
+		return "Something went wrong"
+	}
+	err = filepath.Walk(pPath, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if !info.IsDir() && info.ModTime().After(lastModTime) {
+			lastModTime = info.ModTime()
+			lastModFile = info.Name()
+		}
+		return nil
+	})
+	if err != nil {
+		return "Something went wrong"
+	}
+	switch fmt.Sprint(lastModTime.Date()) {
+	case fmt.Sprint(today.Date()):
+		return "Today"
+	case fmt.Sprint(today.AddDate(0, 0, -1).Date()):
+		return "Yesterday"
+	}
+	return fmt.Sprint(lastModTime.Date())
 }
