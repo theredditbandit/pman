@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -10,18 +9,16 @@ import (
 const StatusBucket = "projects"
 const ProjectPathBucket = "projectPaths"
 const ProjectAliasBucket = "projectAliases"
+const version = "1.0"
 
 var rootCmd = &cobra.Command{
-	Use:   "pman",
-	Short: "The final project manager",
+	Use:     "pman",
+	Short:   "A cli project manager",
+	Version: version,
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) == 0 {
 			cmd.Help()
 			return
-		}
-		interactiveFlag, _ := cmd.Flags().GetBool("i") // TODO: Implement this
-		if interactiveFlag {
-			fmt.Println("Not implemented")
 		}
 	},
 }
@@ -34,5 +31,4 @@ func Execute() {
 }
 
 func init() {
-	rootCmd.Flags().Bool("i", false, "Run pman interactively")
 }
