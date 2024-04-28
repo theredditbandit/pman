@@ -20,7 +20,7 @@ var delCmd = &cobra.Command{
 		projName := args[0]
 		_, err := db.GetRecord(projName, StatusBucket)
 		if err != nil {
-			fmt.Printf("%s is not a valid project to be deleted", projName)
+			fmt.Printf("%s is not a valid project to be deleted\n", projName)
 			fmt.Println("Note : projects cannot be deleted using their alias")
 			return
 		}
@@ -38,12 +38,15 @@ var delCmd = &cobra.Command{
 			if err != nil {
 				log.Fatal(err)
 			}
+			err = db.DeleteFromDb(projName, ProjectAliasBucket)
+			if err != nil {
+				log.Fatal(err)
+			}
 		}
-		err = db.DeleteFromDb(projName, ProjectAliasBucket)
+		err = nil
 		if err != nil {
 			log.Fatal(err)
 		}
-
 		fmt.Printf("Successfully deleted %s from the db \n", projName)
 
 	},
