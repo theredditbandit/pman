@@ -60,6 +60,9 @@ func indexDir(path, identifier string) (map[string]string, error) {
 			return err
 		}
 		if info.IsDir() && info.Name() == ".git" {
+			pname := filepath.Dir(path)
+			absPath, _ := filepath.Abs(pname)
+			projDirs[absPath] = "indexed"
 			return filepath.SkipDir
 		}
 		if !info.IsDir() && info.Name() == identifier {
