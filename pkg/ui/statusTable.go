@@ -13,6 +13,7 @@ import (
 // RenderTable: renders the given data as a table
 func RenderTable(data map[string]string) error {
 	var TableData [][]string
+
 	for p, status := range data {
 		alias, err := db.GetRecord(p, pkg.ProjectAliasBucket)
 		lastEdited := pkg.GetLastModifiedTime(p)
@@ -24,6 +25,14 @@ func RenderTable(data map[string]string) error {
 			row := []string{pkg.TitleCase(status), p, lastEdited} // Status | prjectName
 			TableData = append(TableData, row)
 		}
+	}
+	if len(TableData) == 0 {
+		fmt.Printf("No projects found in the database\n\n")
+		fmt.Printf("Add projects to the database using \n\n")
+		fmt.Println("pman init .")
+		fmt.Println("or")
+		fmt.Println("pman add <projectDir>")
+		return nil
 	}
 	sort.Slice(TableData, func(i, j int) bool {
 		valI := TableData[i][1]
