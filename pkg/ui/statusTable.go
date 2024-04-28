@@ -45,7 +45,7 @@ func RenderTable(data map[string]string) error {
 		"Aborted":     lipgloss.Color("#FF875F"),
 		"Default":     lipgloss.Color("#929292"),
 	}
-	headers := []string{"Project Name", "Status", "Last Edited"}
+	headers := []string{"Status", "Project Name", "Last Edited"}
 	t := table.New().
 		Border(lipgloss.NormalBorder()).
 		BorderStyle(re.NewStyle().Foreground(lipgloss.Color("238"))).
