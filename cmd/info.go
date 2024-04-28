@@ -15,7 +15,7 @@ var infoCmd = &cobra.Command{
 	Short: "The info command pretty prints the README.md file present at the root of the specified project.",
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) != 1 {
-			fmt.Println("Please provde a project name")
+			fmt.Println("Please provide a project name")
 			return
 		}
 		projectName := args[0]
