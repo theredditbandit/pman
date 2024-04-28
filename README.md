@@ -8,7 +8,7 @@ I needed something to keep track of all my side projects.
 ## Install using the go package manager
 
 ```
-go get github.com/theredditbandit/pman@latest
+go install github.com/theredditbandit/pman@latest
 ```
 
 ## Usage 
