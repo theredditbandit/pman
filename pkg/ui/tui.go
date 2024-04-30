@@ -1,9 +1,17 @@
 package ui
 
 import (
+	"fmt"
+	"log"
+	"os"
+
 	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/list"
+	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+	"github.com/theredditbandit/pman/pkg"
+	"github.com/theredditbandit/pman/pkg/db"
+	"github.com/thoas/go-funk"
 )
 
 var (
@@ -18,13 +26,14 @@ var (
 )
 
 type item struct {
-	title       string
-	description string
+	name       string
+	status     string
+	lastEdited string
 }
 
-func (i item) Title() string       { return i.title }
-func (i item) Description() string { return i.description }
-func (i item) FilterValue() string { return i.title }
+func (i item) Title() string       { return i.name }
+func (i item) Description() string { return i.status }
+func (i item) FilterValue() string { return i.name }
 
 type listKeyMap struct {
 	toggleSpinner    key.Binding
@@ -61,6 +70,119 @@ func newListKeyMap() *listKeyMap {
 }
 
 type model struct {
-	list list.Model
-	keys *listKeyMap
+	list         list.Model
+	keys         *listKeyMap
+	delegateKeys *delegateKeyMap
+	// data         map[string]string
+}
+
+func newModel() model {
+	var (
+		listKeys     = newListKeyMap()
+		delegateKeys = newDelegateKeyMap()
+	)
+
+	data, err := db.GetAllRecords(pkg.StatusBucket)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	d := funk.Map(data, func(k, v string) item {
+		return item{
+			name:   k,
+			status: v,
+		}
+	})
+
+	formattedData, _ := d.([]item)
+	items := make([]list.Item, len(data))
+	for i := 0; i < len(data); i++ {
+		items[i] = formattedData[i]
+	}
+
+	// setup list
+	delegate := newItemDelegate(delegateKeys)
+	projectList := list.New(items, delegate, 0, 0)
+	projectList.Title = "pman"
+	projectList.Styles.Title = titleStyle
+
+	projectList.AdditionalFullHelpKeys = func() []key.Binding {
+		return []key.Binding{
+			listKeys.toggleSpinner,
+			listKeys.insertItem,
+			listKeys.toggleTitleBar,
+			listKeys.toggleStatusBar,
+			listKeys.togglePagination,
+			listKeys.toggleHelpMenu,
+		}
+	}
+	return model{
+		list:         projectList,
+		keys:         listKeys,
+		delegateKeys: delegateKeys,
+		// data:         data,
+	}
+}
+
+func (m model) Init() tea.Cmd {
+	return nil
+}
+
+func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	var cmds []tea.Cmd
+
+	switch msg := msg.(type) {
+	case tea.WindowSizeMsg:
+		h, v := appStyle.GetFrameSize()
+		m.list.SetSize(msg.Width-h, msg.Height-v)
+
+	case tea.KeyMsg:
+		// Don't match any of the keys below if we're actively filtering.
+		if m.list.FilterState() == list.Filtering {
+			break
+		}
+
+		switch {
+		case key.Matches(msg, m.keys.toggleSpinner):
+			cmd := m.list.ToggleSpinner()
+			return m, cmd
+
+		case key.Matches(msg, m.keys.toggleTitleBar):
+			v := !m.list.ShowTitle()
+			m.list.SetShowTitle(v)
+			m.list.SetShowFilter(v)
+			m.list.SetFilteringEnabled(v)
+			return m, nil
+
+		case key.Matches(msg, m.keys.toggleStatusBar):
+			m.list.SetShowStatusBar(!m.list.ShowStatusBar())
+			return m, nil
+
+		case key.Matches(msg, m.keys.togglePagination):
+			m.list.SetShowPagination(!m.list.ShowPagination())
+			return m, nil
+
+		case key.Matches(msg, m.keys.toggleHelpMenu):
+			m.list.SetShowHelp(!m.list.ShowHelp())
+			return m, nil
+		}
+	}
+
+	// This will also call our delegate's update function.
+	newListModel, cmd := m.list.Update(msg)
+	m.list = newListModel
+	cmds = append(cmds, cmd)
+
+	return m, tea.Batch(cmds...)
+}
+
+func (m model) View() string {
+	return appStyle.Render(m.list.View())
+}
+
+func Tui() {
+	if _, err := tea.NewProgram(newModel(), tea.WithAltScreen()).Run(); err != nil {
+		fmt.Println("Error running program:", err)
+		os.Exit(1)
+	}
 }

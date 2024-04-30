@@ -2,7 +2,8 @@ package cmd
 
 import (
 	"github.com/spf13/cobra"
-	"github.com/theredditbandit/pman/pkg/ui/example"
+	"github.com/theredditbandit/pman/pkg/ui"
+	_ "github.com/theredditbandit/pman/pkg/ui/example"
 )
 
 // iCmd represents the interactive command
@@ -11,7 +12,8 @@ var iCmd = &cobra.Command{
 	Short:   "Launches pman in interactive mode",
 	Aliases: []string{"interactive", "iteractive"},
 	Run: func(cmd *cobra.Command, args []string) {
-		example.Example()
+		// example.RunExampleList()
+		ui.Tui()
 	},
 }
 
