@@ -36,7 +36,7 @@ func (i item) Description() string { return i.status }
 func (i item) FilterValue() string { return i.status }
 
 type listKeyMap struct {
-	toggleSpinner    key.Binding
+	setStatus        key.Binding
 	toggleTitleBar   key.Binding
 	toggleStatusBar  key.Binding
 	togglePagination key.Binding
@@ -46,9 +46,9 @@ type listKeyMap struct {
 
 func newListKeyMap() *listKeyMap {
 	return &listKeyMap{
-		toggleSpinner: key.NewBinding(
+		setStatus: key.NewBinding(
 			key.WithKeys("s"),
-			key.WithHelp("s", "toggle spinner"),
+			key.WithHelp("s", "set status"),
 		),
 		toggleTitleBar: key.NewBinding(
 			key.WithKeys("T"),
@@ -106,7 +106,7 @@ func newModel() model {
 
 	projectList.AdditionalFullHelpKeys = func() []key.Binding {
 		return []key.Binding{
-			listKeys.toggleSpinner,
+			listKeys.setStatus,
 			listKeys.insertItem,
 			listKeys.toggleTitleBar,
 			listKeys.toggleStatusBar,
@@ -140,7 +140,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 
 		switch {
-		case key.Matches(msg, m.keys.toggleSpinner):
+		case key.Matches(msg, m.keys.setStatus):
 			cmd := m.list.ToggleSpinner()
 			return m, cmd
 

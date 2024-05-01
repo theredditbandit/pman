@@ -1,5 +1,4 @@
 Set Shell zsh
-Set Theme "Catppuccin Macchiato"
 Set WindowBar Colorful
 Set Padding 5
 Set Height 900

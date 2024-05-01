@@ -41,4 +41,7 @@ Flags:
 Use "pman [command] --help" for more information about a command.
 ```
 
+## How does it work.
+when you run `pman init .` in any directory , it will look for subdirectories that contain a README.md or a .git folder and consider it as a project director.
+
 
