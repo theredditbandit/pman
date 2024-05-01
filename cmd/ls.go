@@ -3,9 +3,9 @@ package cmd
 import (
 	"fmt"
 	"github.com/spf13/cobra"
-	"github.com/theredditbandit/pman/pkg"
 	"github.com/theredditbandit/pman/pkg/db"
 	"github.com/theredditbandit/pman/pkg/ui"
+	"github.com/theredditbandit/pman/pkg/utils"
 	"log"
 )
 
@@ -23,7 +23,7 @@ var lsCmd = &cobra.Command{
 		}
 		if filterFlag != "" {
 			fmt.Println("Filtering by status : ", filterFlag)
-			data := pkg.FilterByStatus(data, filterFlag)
+			data := utils.FilterByStatus(data, filterFlag)
 			ui.RenderTable(data)
 			return
 		}

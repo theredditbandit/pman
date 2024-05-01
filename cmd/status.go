@@ -2,8 +2,8 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/theredditbandit/pman/pkg"
 	"github.com/theredditbandit/pman/pkg/db"
+	"github.com/theredditbandit/pman/pkg/utils"
 
 	"github.com/spf13/cobra"
 )
@@ -31,9 +31,9 @@ var statusCmd = &cobra.Command{
 			return
 		}
 		if alias != "" {
-			fmt.Printf("Status of %s (%s) : %s\n", projName, alias, pkg.TitleCase(status))
+			fmt.Printf("Status of %s (%s) : %s\n", projName, alias, utils.TitleCase(status))
 		} else {
-			fmt.Printf("Status of %s  : %s\n", projName, pkg.TitleCase(status))
+			fmt.Printf("Status of %s  : %s\n", projName, utils.TitleCase(status))
 		}
 	},
 }

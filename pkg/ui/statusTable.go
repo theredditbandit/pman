@@ -6,6 +6,7 @@ import (
 	"github.com/charmbracelet/lipgloss/table"
 	"github.com/theredditbandit/pman/pkg"
 	"github.com/theredditbandit/pman/pkg/db"
+	"github.com/theredditbandit/pman/pkg/utils"
 	"os"
 	"sort"
 )
@@ -16,13 +17,13 @@ func RenderTable(data map[string]string) error {
 
 	for p, status := range data {
 		alias, err := db.GetRecord(p, pkg.ProjectAliasBucket)
-		lastEdited := pkg.GetLastModifiedTime(p)
+		lastEdited := utils.GetLastModifiedTime(p)
 		if err == nil {
 			pname := fmt.Sprintf("%s (%s)", p, alias)
-			row := []string{pkg.TitleCase(status), pname, lastEdited} // Status | prjectName (alias)
+			row := []string{utils.TitleCase(status), pname, lastEdited} // Status | prjectName (alias) | lastEdited
 			TableData = append(TableData, row)
 		} else {
-			row := []string{pkg.TitleCase(status), p, lastEdited} // Status | prjectName
+			row := []string{utils.TitleCase(status), p, lastEdited} // Status | prjectName | lastEdited
 			TableData = append(TableData, row)
 		}
 	}
@@ -59,7 +60,7 @@ func RenderTable(data map[string]string) error {
 		Border(lipgloss.NormalBorder()).
 		BorderStyle(re.NewStyle().Foreground(lipgloss.Color("238"))).
 		Headers(headers...).
-		Width(100).
+		Width(90).
 		Rows(TableData...).
 		StyleFunc(func(row, col int) lipgloss.Style {
 			if row == 0 {
