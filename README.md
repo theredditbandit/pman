@@ -57,11 +57,11 @@ Get the status of any project individually using `pman status <projectName>`
 Filter the results by status while listing projects using `pman ls --f <status>`
 ![image](https://github.com/theredditbandit/pman/assets/85390033/f8311d11-7fda-48f2-a634-daaf4ded90f2)
 
-Print the readme contents of a project using `pman info <projectName>`
+Print the README contents of a project using `pman info <projectName>`
 ![image](https://github.com/theredditbandit/pman/assets/85390033/6eabda18-479e-445b-8a6a-7b5b370e3e49)
 
 ### Interactive mode 
-launch pman in interactive mode using `pman i`
+Launch pman in interactive mode using `pman i`
 ![image](https://github.com/theredditbandit/pman/assets/85390033/9d844a3f-b6c8-47ac-9a28-a6f810b0b6ec)
 
 
