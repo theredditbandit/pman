@@ -6,6 +6,7 @@ import (
 	"github.com/charmbracelet/lipgloss/table"
 	"github.com/theredditbandit/pman/pkg"
 	"github.com/theredditbandit/pman/pkg/db"
+	"github.com/theredditbandit/pman/pkg/utils"
 	"os"
 	"sort"
 )
@@ -16,13 +17,13 @@ func RenderTable(data map[string]string) error {
 
 	for p, status := range data {
 		alias, err := db.GetRecord(p, pkg.ProjectAliasBucket)
-		lastEdited := pkg.GetLastModifiedTime(p)
+		lastEdited := utils.GetLastModifiedTime(p)
 		if err == nil {
 			pname := fmt.Sprintf("%s (%s)", p, alias)
-			row := []string{pkg.TitleCase(status), pname, lastEdited} // Status | prjectName (alias) | lastEdited
+			row := []string{utils.TitleCase(status), pname, lastEdited} // Status | prjectName (alias) | lastEdited
 			TableData = append(TableData, row)
 		} else {
-			row := []string{pkg.TitleCase(status), p, lastEdited} // Status | prjectName | lastEdited
+			row := []string{utils.TitleCase(status), p, lastEdited} // Status | prjectName | lastEdited
 			TableData = append(TableData, row)
 		}
 	}

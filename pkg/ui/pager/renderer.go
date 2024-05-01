@@ -8,7 +8,7 @@ import (
 	"github.com/charmbracelet/bubbles/viewport"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
-	"github.com/theredditbandit/pman/pkg"
+	"github.com/theredditbandit/pman/pkg/utils"
 )
 
 const useHighPerformanceRenderer = true
@@ -102,9 +102,9 @@ func (m model) footerView() string {
 
 func LaunchRenderer(file string) {
 	// Load some text for our viewport
-	content := pkg.ReadREADME(file)
+	content := utils.ReadREADME(file)
 	p := tea.NewProgram(
-		model{content: pkg.BeautifyMD(content),
+		model{content: utils.BeautifyMD(content),
 			project: file},
 		tea.WithAltScreen(),       // use the full size of the terminal in its "alternate screen buffer"
 		tea.WithMouseCellMotion(), // turn on mouse support so we can track the mouse wheel

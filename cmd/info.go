@@ -3,7 +3,7 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/theredditbandit/pman/pkg"
+	"github.com/theredditbandit/pman/pkg/utils"
 
 	"github.com/spf13/cobra"
 )
@@ -18,8 +18,8 @@ var infoCmd = &cobra.Command{
 			return
 		}
 		projectName := args[0]
-		infoData := pkg.ReadREADME(projectName)
-		md := pkg.BeautifyMD(infoData)
+		infoData := utils.ReadREADME(projectName)
+		md := utils.BeautifyMD(infoData)
 		fmt.Print(md)
 	},
 }

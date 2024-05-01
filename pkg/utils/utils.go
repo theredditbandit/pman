@@ -1,4 +1,4 @@
-package pkg
+package utils
 
 import (
 	"fmt"
@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/charmbracelet/glamour"
+	"github.com/theredditbandit/pman/pkg"
 	"github.com/theredditbandit/pman/pkg/db"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
@@ -31,7 +32,7 @@ func FilterByStatus(data map[string]string, status string) map[string]string {
 // Deprecated: Use ui.RenderTable instead
 func PrintData(data map[string]string) {
 	for k, v := range data {
-		alias, err := db.GetRecord(k, ProjectAliasBucket)
+		alias, err := db.GetRecord(k, pkg.ProjectAliasBucket)
 		if err == nil {
 			fmt.Printf("%s : %s (%s) \n", TitleCase(v), k, alias)
 		} else {
@@ -45,7 +46,7 @@ func GetLastModifiedTime(pname string) string {
 	var lastModFile string
 	today := time.Now()
 	_ = lastModFile
-	pPath, err := db.GetRecord(pname, ProjectPaths)
+	pPath, err := db.GetRecord(pname, pkg.ProjectPaths)
 	if err != nil {
 		return "Something went wrong"
 	}
@@ -87,11 +88,11 @@ func BeautifyMD(data []byte) string {
 
 // ReadREADME: returns the byte array of REAMDE.md of a project
 func ReadREADME(projectName string) []byte {
-	actualName, err := db.GetRecord(projectName, ProjectAliasBucket)
+	actualName, err := db.GetRecord(projectName, pkg.ProjectAliasBucket)
 	if err == nil {
 		projectName = actualName
 	}
-	path, err := db.GetRecord(projectName, ProjectPaths)
+	path, err := db.GetRecord(projectName, pkg.ProjectPaths)
 	if err != nil {
 		log.Fatalf("project: %v not a valid project\n", projectName)
 	}
