@@ -16,13 +16,13 @@ const useHighPerformanceRenderer = true
 var (
 	pagerTitleStyle = func() lipgloss.Style {
 		b := lipgloss.RoundedBorder()
-		b.Right = "|-"
+		b.Right = "$"
 		return lipgloss.NewStyle().BorderStyle(b).Padding(0, 1)
 	}()
 
 	infoStyle = func() lipgloss.Style {
 		b := lipgloss.RoundedBorder()
-		b.Left = "-|"
+		b.Left = "$"
 		return pagerTitleStyle.Copy().BorderStyle(b)
 	}()
 )
@@ -101,7 +101,6 @@ func (m model) footerView() string {
 }
 
 func LaunchRenderer(file string) {
-	// Load some text for our viewport
 	content := utils.ReadREADME(file)
 	p := tea.NewProgram(
 		model{content: utils.BeautifyMD(content),
