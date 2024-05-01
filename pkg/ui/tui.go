@@ -33,7 +33,7 @@ type item struct {
 
 func (i item) Title() string       { return i.name }
 func (i item) Description() string { return i.status }
-func (i item) FilterValue() string { return i.name }
+func (i item) FilterValue() string { return i.status }
 
 type listKeyMap struct {
 	toggleSpinner    key.Binding
