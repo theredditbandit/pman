@@ -2,10 +2,12 @@ package pkg
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 	"time"
 
+	"github.com/charmbracelet/glamour"
 	"github.com/theredditbandit/pman/pkg/db"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
@@ -67,4 +69,36 @@ func GetLastModifiedTime(pname string) string {
 		return fmt.Sprintf("Yesterday %s", lastModTime.Format("17:00"))
 	}
 	return fmt.Sprint(lastModTime.Format("02 Jan 06 15:04"))
+}
+
+// BeautifyMD: returns styled markdown
+func BeautifyMD(data []byte) string {
+	r, err := glamour.NewTermRenderer(
+		glamour.WithAutoStyle(),
+		glamour.WithWordWrap(120),
+		glamour.WithAutoStyle(),
+	)
+	if err != nil {
+		log.Fatal("something went wrong while creating renderer: ", err)
+	}
+	out, _ := r.Render(string(data))
+	return out
+}
+
+// ReadREADME: returns the byte array of REAMDE.md of a project
+func ReadREADME(projectName string) []byte {
+	actualName, err := db.GetRecord(projectName, ProjectAliasBucket)
+	if err == nil {
+		projectName = actualName
+	}
+	path, err := db.GetRecord(projectName, ProjectPaths)
+	if err != nil {
+		log.Fatalf("project: %v not a valid project\n", projectName)
+	}
+	pPath := filepath.Join(path, "README.md")
+	data, err := os.ReadFile(pPath)
+	if err != nil {
+		log.Fatal("Something went wrong while reading README for ", projectName, "\nERR : ", err)
+	}
+	return data
 }

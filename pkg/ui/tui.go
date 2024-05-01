@@ -73,7 +73,6 @@ type model struct {
 	list         list.Model
 	keys         *listKeyMap
 	delegateKeys *delegateKeyMap
-	// data         map[string]string
 }
 
 func newModel() model {
@@ -100,7 +99,6 @@ func newModel() model {
 		items[i] = formattedData[i]
 	}
 
-	// setup list
 	delegate := newItemDelegate(delegateKeys)
 	projectList := list.New(items, delegate, 0, 0)
 	projectList.Title = "pman"
@@ -120,7 +118,6 @@ func newModel() model {
 		list:         projectList,
 		keys:         listKeys,
 		delegateKeys: delegateKeys,
-		// data:         data,
 	}
 }
 
