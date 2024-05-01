@@ -14,7 +14,7 @@ go install github.com/theredditbandit/pman@latest
 ## Usage 
 
 ```
-The final project manager
+A cli project manager
 
 Usage:
   pman [flags]
@@ -22,10 +22,11 @@ Usage:
 
 Available Commands:
   add         Adds a project directory to the index
-  alias       A brief description of your command
+  alias       Sets the alias for a project , whose name might be too big
   completion  Generate the autocompletion script for the specified shell
   delete      Deletes a project from the index database. This does not delete the project from the filesystem
   help        Help about any command
+  i           Launches pman in interactive mode
   info        The info command pretty prints the README.md file present at the root of the specified project.
   init        Takes exactly 1 argument, a directory name, and initializes it as a project directory.
   ls          List all indexed projects along with their status
@@ -34,10 +35,10 @@ Available Commands:
   status      Get the status of a project
 
 Flags:
-  -h, --help   help for pman
+  -h, --help      help for pman
+  -v, --version   version for pman
 
 Use "pman [command] --help" for more information about a command.
 ```
 
-## watch pman in action
-![pman](https://github.com/theredditbandit/pman/assets/85390033/eef01bbc-7a66-4183-8dbb-d237dcc52aff)
+
