@@ -1,17 +1,16 @@
 # pman
-pman is a command line tool to keep track of all your side projects.
-
+pman is a command-line tool to keep track of all your side projects.
 
 ## Why?
 I needed something to keep track of all my side projects.
 
 ## Install using the go package manager
 
-```
+```shell
 go install github.com/theredditbandit/pman@latest
 ```
 
-## Usage 
+## Usage
 
 ```
 A cli project manager
@@ -22,7 +21,7 @@ Usage:
 
 Available Commands:
   add         Adds a project directory to the index
-  alias       Sets the alias for a project , whose name might be too big
+  alias       Sets the alias for a project, whose name might be too big
   completion  Generate the autocompletion script for the specified shell
   delete      Deletes a project from the index database. This does not delete the project from the filesystem
   help        Help about any command
@@ -30,7 +29,7 @@ Available Commands:
   info        The info command pretty prints the README.md file present at the root of the specified project.
   init        Takes exactly 1 argument, a directory name, and initializes it as a project directory.
   ls          List all indexed projects along with their status
-  reset       Deletes the current indexed projects , run pman init to reindex the projects
+  reset       Deletes the current indexed projects, run pman init to reindex the projects
   set         Set the status of a project
   status      Get the status of a project
 
@@ -41,14 +40,14 @@ Flags:
 Use "pman [command] --help" for more information about a command.
 ```
 
-## How does it work.
+## How does it work
 
 ### init
-when you run `pman init .` in any directory , it will look for subdirectories that contain a README.md or a .git folder and consider it as a project directory.
+when you run `pman init .` in any directory, it will look for subdirectories that contain a README.md or a .git folder and consider it as a project directory.
 ![image](https://github.com/theredditbandit/pman/assets/85390033/b9d6fcd3-41ca-4bd2-aa32-9b3e9bff1be8)
 
-### set , status , info and filter
-Set the status of any project using `pman set <projectName>` 
+### set, status, info and filter
+Set the status of any project using `pman set <projectName>`
 ![image](https://github.com/theredditbandit/pman/assets/85390033/1c9658ab-4280-435e-8d30-52963f656cc6)
 
 Get the status of any project individually using `pman status <projectName>`
@@ -60,7 +59,7 @@ Filter the results by status while listing projects using `pman ls --f <status>`
 Print the README contents of a project using `pman info <projectName>`
 ![image](https://github.com/theredditbandit/pman/assets/85390033/6eabda18-479e-445b-8a6a-7b5b370e3e49)
 
-### Interactive mode 
+### Interactive mode
 Launch pman in interactive mode using `pman i`
 ![image](https://github.com/theredditbandit/pman/assets/85390033/9d844a3f-b6c8-47ac-9a28-a6f810b0b6ec)
 

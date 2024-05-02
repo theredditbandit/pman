@@ -110,6 +110,6 @@ func LaunchRenderer(file string) {
 	)
 
 	if _, err := p.Run(); err != nil {
-		log.Fatal("cound not run pager :", err)
+		log.Fatal("could not run pager :", err)
 	}
 }
