@@ -9,9 +9,11 @@ import (
 	"github.com/theredditbandit/pman/pkg/db"
 )
 
-const StatusBucket = "projects"
-const ProjectPaths = "projectPaths"
-const ProjectAliasBucket = "projectAliases"
+const (
+	StatusBucket       = "projects"
+	ProjectPaths       = "projectPaths"
+	ProjectAliasBucket = "projectAliases"
+)
 
 // InitDirs indexes a directory for project directories and writes the data to the db
 func InitDirs(args []string) {
