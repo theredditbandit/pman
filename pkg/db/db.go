@@ -14,7 +14,7 @@ const DBName = "projects.db"
 
 // WriteToDB writes the data to the specified bucket in the database
 func WriteToDB(data map[string]string, bucketName string) error {
-	db, err := bolt.Open(getDBLoc(DBName), 0600, nil) // create the database if it doesn't exist then open it
+	db, err := bolt.Open(getDBLoc(DBName), 0o600, nil) // create the database if it doesn't exist then open it
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -36,7 +36,7 @@ func WriteToDB(data map[string]string, bucketName string) error {
 }
 
 func DeleteFromDb(key string, bucketName string) error {
-	db, err := bolt.Open(getDBLoc(DBName), 0600, nil) // create the database if it doesn't exist then open it
+	db, err := bolt.Open(getDBLoc(DBName), 0o600, nil) // create the database if it doesn't exist then open it
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -63,7 +63,7 @@ func getDBLoc(dbname string) string {
 	}
 	dbPath := filepath.Join(usr.HomeDir, ".local", "share", "pman", dbname)
 	if _, err := os.Stat(filepath.Dir(dbPath)); os.IsNotExist(err) {
-		os.MkdirAll(filepath.Dir(dbPath), 0755)
+		os.MkdirAll(filepath.Dir(dbPath), 0o755)
 	}
 	return dbPath
 }
@@ -71,7 +71,7 @@ func getDBLoc(dbname string) string {
 // GetRecord returns the value of the key from the specified bucket, and error if it does not exist
 func GetRecord(key string, bucketName string) (string, error) {
 	var rec string
-	db, err := bolt.Open(getDBLoc(DBName), 0600, nil)
+	db, err := bolt.Open(getDBLoc(DBName), 0o600, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -96,7 +96,7 @@ func GetRecord(key string, bucketName string) (string, error) {
 
 // GetAllRecords returns all the records from the specified bucket as a dictionary
 func GetAllRecords(bucketName string) (map[string]string, error) {
-	db, err := bolt.Open(getDBLoc(DBName), 0600, nil)
+	db, err := bolt.Open(getDBLoc(DBName), 0o600, nil)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -121,7 +121,7 @@ func GetAllRecords(bucketName string) (map[string]string, error) {
 
 // UpdateRec updates the value of the key in the specified bucket, usually used to update the status of a project
 func UpdateRec(key, val, bucketName string) error {
-	db, err := bolt.Open(getDBLoc(DBName), 0600, nil)
+	db, err := bolt.Open(getDBLoc(DBName), 0o600, nil)
 	if err != nil {
 		log.Fatal(err)
 	}

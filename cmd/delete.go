@@ -49,7 +49,6 @@ var delCmd = &cobra.Command{
 			log.Fatal(err)
 		}
 		fmt.Printf("Successfully deleted %s from the db \n", projName)
-
 	},
 }
 

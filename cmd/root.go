@@ -6,10 +6,12 @@ import (
 	"github.com/spf13/cobra"
 )
 
-const StatusBucket = "projects"
-const ProjectPathBucket = "projectPaths"
-const ProjectAliasBucket = "projectAliases"
-const version = "1.0"
+const (
+	StatusBucket       = "projects"
+	ProjectPathBucket  = "projectPaths"
+	ProjectAliasBucket = "projectAliases"
+	version            = "1.0"
+)
 
 var rootCmd = &cobra.Command{
 	Use:     "pman",

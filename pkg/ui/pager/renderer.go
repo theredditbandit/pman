@@ -104,8 +104,10 @@ func (m model) footerView() string {
 func LaunchRenderer(file string) {
 	content := utils.ReadREADME(file)
 	p := tea.NewProgram(
-		model{content: utils.BeautifyMD(content),
-			project: file},
+		model{
+			content: utils.BeautifyMD(content),
+			project: file,
+		},
 		tea.WithAltScreen(),       // use the full size of the terminal in its "alternate screen buffer"
 		tea.WithMouseCellMotion(), // turn on mouse support so we can track the mouse wheel
 	)
