@@ -9,7 +9,7 @@ import (
 var iCmd = &cobra.Command{
 	Use:     "i",
 	Short:   "Launches pman in interactive mode",
-	Aliases: []string{"interactive", "iteractive"},
+	Aliases: []string{"interactive", "iterative"},
 	Run: func(cmd *cobra.Command, args []string) {
 		ui.Tui()
 	},
