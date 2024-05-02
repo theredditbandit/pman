@@ -2,13 +2,15 @@ package ui
 
 import (
 	"fmt"
+	"os"
+	"sort"
+
 	"github.com/charmbracelet/lipgloss"
 	"github.com/charmbracelet/lipgloss/table"
+
 	"github.com/theredditbandit/pman/pkg"
 	"github.com/theredditbandit/pman/pkg/db"
 	"github.com/theredditbandit/pman/pkg/utils"
-	"os"
-	"sort"
 )
 
 // RenderTable: renders the given data as a table

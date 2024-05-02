@@ -1,9 +1,9 @@
 package cmd
 
 import (
-	"github.com/theredditbandit/pman/pkg"
-
 	"github.com/spf13/cobra"
+
+	"github.com/theredditbandit/pman/pkg"
 )
 
 var initCmd = &cobra.Command{

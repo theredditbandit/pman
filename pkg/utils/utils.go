@@ -8,10 +8,11 @@ import (
 	"time"
 
 	"github.com/charmbracelet/glamour"
-	"github.com/theredditbandit/pman/pkg"
-	"github.com/theredditbandit/pman/pkg/db"
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
+
+	"github.com/theredditbandit/pman/pkg"
+	"github.com/theredditbandit/pman/pkg/db"
 )
 
 func TitleCase(s string) string {

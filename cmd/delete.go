@@ -2,10 +2,11 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/theredditbandit/pman/pkg/db"
 	"log"
 
 	"github.com/spf13/cobra"
+
+	"github.com/theredditbandit/pman/pkg/db"
 )
 
 var delCmd = &cobra.Command{

@@ -2,7 +2,9 @@ package cmd
 
 import (
 	"fmt"
+
 	"github.com/spf13/cobra"
+
 	"github.com/theredditbandit/pman/pkg/db"
 )
 
