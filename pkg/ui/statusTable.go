@@ -20,10 +20,10 @@ func RenderTable(data map[string]string) error {
 		lastEdited := utils.GetLastModifiedTime(p)
 		if err == nil {
 			pname := fmt.Sprintf("%s (%s)", p, alias)
-			row := []string{utils.TitleCase(status), pname, lastEdited} // Status | prjectName (alias) | lastEdited
+			row := []string{utils.TitleCase(status), pname, lastEdited} // Status | projectName (alias) | lastEdited
 			TableData = append(TableData, row)
 		} else {
-			row := []string{utils.TitleCase(status), p, lastEdited} // Status | prjectName | lastEdited
+			row := []string{utils.TitleCase(status), p, lastEdited} // Status | projectName | lastEdited
 			TableData = append(TableData, row)
 		}
 	}

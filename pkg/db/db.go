@@ -55,7 +55,7 @@ func DeleteFromDb(key string, bucketName string) error {
 	return err
 }
 
-// getDBLoc returns the path to the database file , creating the directory if it doesn't exist
+// getDBLoc returns the path to the database file, creating the directory if it doesn't exist
 func getDBLoc(dbname string) string {
 	usr, err := user.Current()
 	if err != nil {
@@ -68,7 +68,7 @@ func getDBLoc(dbname string) string {
 	return dbPath
 }
 
-// GetRecord returns the value of the key from the specified bucket , and error if it does not exist
+// GetRecord returns the value of the key from the specified bucket, and error if it does not exist
 func GetRecord(key string, bucketName string) (string, error) {
 	var rec string
 	db, err := bolt.Open(getDBLoc(DBName), 0600, nil)
@@ -105,7 +105,7 @@ func GetAllRecords(bucketName string) (map[string]string, error) {
 	err = db.View(func(tx *bolt.Tx) error {
 		bucket := tx.Bucket([]byte(bucketName))
 		if bucket == nil {
-			return fmt.Errorf("Database not found. \n This could be because no project dir has been initialised yet.")
+			return fmt.Errorf("Database not found. \nThis could be because no project dir has been initialized yet.")
 		}
 		err := bucket.ForEach(func(k, v []byte) error {
 			records[string(k)] = string(v)
@@ -119,7 +119,7 @@ func GetAllRecords(bucketName string) (map[string]string, error) {
 	return records, nil
 }
 
-// UpdateRec updates the value of the key in the specified bucket , usually used to update the status of a project
+// UpdateRec updates the value of the key in the specified bucket, usually used to update the status of a project
 func UpdateRec(key, val, bucketName string) error {
 	db, err := bolt.Open(getDBLoc(DBName), 0600, nil)
 	if err != nil {

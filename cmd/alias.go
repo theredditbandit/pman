@@ -9,7 +9,7 @@ import (
 // aliasCmd represents the alias command
 var aliasCmd = &cobra.Command{
 	Use:   "alias",
-	Short: "Sets the alias for a project , whose name might be too big",
+	Short: "Sets the alias for a project, whose name might be too big",
 	Long: `The idea is instead of having to type a-very-long-project-name-every-time you can alias it to
 avlpn or something smaller and use that to query pman`,
 	Run: func(cmd *cobra.Command, args []string) {

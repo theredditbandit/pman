@@ -86,7 +86,7 @@ func BeautifyMD(data []byte) string {
 	return out
 }
 
-// ReadREADME: returns the byte array of REAMDE.md of a project
+// ReadREADME: returns the byte array of README.md of a project
 func ReadREADME(projectName string) []byte {
 	actualName, err := db.GetRecord(projectName, pkg.ProjectAliasBucket)
 	if err == nil {
