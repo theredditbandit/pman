@@ -9,9 +9,10 @@ import (
 	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+	"github.com/thoas/go-funk"
+
 	"github.com/theredditbandit/pman/pkg"
 	"github.com/theredditbandit/pman/pkg/db"
-	"github.com/thoas/go-funk"
 )
 
 var (

@@ -2,9 +2,10 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/theredditbandit/pman/pkg/db"
 
 	"github.com/spf13/cobra"
+
+	"github.com/theredditbandit/pman/pkg/db"
 )
 
 var setCmd = &cobra.Command{

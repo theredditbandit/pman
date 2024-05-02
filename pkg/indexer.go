@@ -2,10 +2,11 @@ package pkg
 
 import (
 	"fmt"
-	"github.com/theredditbandit/pman/pkg/db"
 	"log"
 	"os"
 	"path/filepath"
+
+	"github.com/theredditbandit/pman/pkg/db"
 )
 
 const StatusBucket = "projects"

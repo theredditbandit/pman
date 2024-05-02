@@ -3,9 +3,9 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/theredditbandit/pman/pkg/utils"
-
 	"github.com/spf13/cobra"
+
+	"github.com/theredditbandit/pman/pkg/utils"
 )
 
 var infoCmd = &cobra.Command{
