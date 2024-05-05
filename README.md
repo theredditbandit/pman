@@ -63,4 +63,6 @@ Print the README contents of a project using `pman info <projectName>`
 Launch pman in interactive mode using `pman i`
 ![image](https://github.com/theredditbandit/pman/assets/85390033/9d844a3f-b6c8-47ac-9a28-a6f810b0b6ec)
 
+## Star History
 
+[![Star History Chart](https://api.star-history.com/svg?repos=theredditbandit/pman&type=Date)](https://star-history.com/#theredditbandit/pman&Date)
