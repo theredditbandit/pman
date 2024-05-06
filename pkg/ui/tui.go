@@ -2,8 +2,6 @@ package ui
 
 import (
 	"fmt"
-	"log"
-	"os"
 
 	"github.com/charmbracelet/bubbles/key"
 	"github.com/charmbracelet/bubbles/list"
@@ -76,7 +74,7 @@ type model struct {
 	delegateKeys *delegateKeyMap
 }
 
-func newModel() model {
+func newModel() (model, error) {
 	var (
 		listKeys     = newListKeyMap()
 		delegateKeys = newDelegateKeyMap()
@@ -84,7 +82,7 @@ func newModel() model {
 
 	data, err := db.GetAllRecords(pkg.StatusBucket)
 	if err != nil {
-		log.Fatal(err)
+		return model{}, err
 	}
 
 	d := funk.Map(data, func(k, v string) item {
@@ -119,10 +117,10 @@ func newModel() model {
 		list:         projectList,
 		keys:         listKeys,
 		delegateKeys: delegateKeys,
-	}
+	}, nil
 }
 
-func (m model) Init() tea.Cmd {
+func (model) Init() tea.Cmd {
 	return nil
 }
 
@@ -178,9 +176,15 @@ func (m model) View() string {
 	return appStyle.Render(m.list.View())
 }
 
-func Tui() {
-	if _, err := tea.NewProgram(newModel(), tea.WithAltScreen()).Run(); err != nil {
-		fmt.Println("Error running program:", err)
-		os.Exit(1)
+func Tui() error {
+	model, err := newModel()
+	if err != nil {
+		return err
 	}
+
+	if _, err := tea.NewProgram(model, tea.WithAltScreen()).Run(); err != nil {
+		return fmt.Errorf("Error running program: %w", err)
+	}
+
+	return nil
 }

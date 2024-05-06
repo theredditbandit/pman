@@ -64,17 +64,17 @@ func RenderTable(data map[string]string) error {
 		Headers(headers...).
 		Width(90).
 		Rows(TableData...).
-		StyleFunc(func(row, col int) lipgloss.Style {
+		StyleFunc(func(row, _ int) lipgloss.Style {
 			if row == 0 {
 				return headerStyle
 			}
 			color, ok := statusColors[fmt.Sprint(TableData[row-1][0])]
 			if ok {
 				return baseStyle.Copy().Foreground(color)
-			} else {
-				color := statusColors["Default"]
-				return baseStyle.Copy().Foreground(color)
 			}
+
+			color = statusColors["Default"]
+			return baseStyle.Copy().Foreground(color)
 		})
 	fmt.Println(t)
 	return nil

@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/spf13/cobra"
@@ -14,11 +15,10 @@ var statusCmd = &cobra.Command{
 	Use:   "status",
 	Short: "Get the status of a project",
 	Long:  `Query the database for the status of a project.`,
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(_ *cobra.Command, args []string) error {
 		var alias string
 		if len(args) != 1 {
-			fmt.Println("Please provide a project name")
-			return
+			return errors.New("Please provide a project name")
 		}
 		projName := args[0]
 		actualName, err := db.GetRecord(projName, ProjectAliasBucket)
@@ -28,14 +28,15 @@ var statusCmd = &cobra.Command{
 		}
 		status, err := db.GetRecord(projName, StatusBucket)
 		if err != nil {
-			fmt.Printf("%s is not a valid project name : Err -> %s", projName, err)
-			return
+			return fmt.Errorf("%s is not a valid project name : Err -> %w", projName, err)
 		}
 		if alias != "" {
 			fmt.Printf("Status of %s (%s) : %s\n", projName, alias, utils.TitleCase(status))
 		} else {
 			fmt.Printf("Status of %s  : %s\n", projName, utils.TitleCase(status))
 		}
+
+		return nil
 	},
 }
 

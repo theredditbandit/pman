@@ -1,8 +1,8 @@
 package pkg
 
 import (
+	"errors"
 	"fmt"
-	"log"
 	"os"
 	"path/filepath"
 
@@ -15,26 +15,22 @@ const (
 	ProjectAliasBucket = "projectAliases"
 )
 
-// InitDirs indexes a directory for project directories and writes the data to the db
-func InitDirs(args []string) {
+// InitDirs indexes a directory for project directories and writes the data to the DB
+func InitDirs(args []string) error {
 	// the file which identifies a project directory
 	projIdentifier := "README.md"
 	if len(args) != 1 {
-		fmt.Println("Please provide a directory name")
-		return
+		return errors.New("Please provide a directory name")
 	}
 	dirname := args[0]
 	if stat, err := os.Stat(dirname); os.IsNotExist(err) {
-		fmt.Printf("%s is not a directory \n", dirname)
-		return
+		return fmt.Errorf("%s is not a directory", dirname)
 	} else if !stat.IsDir() {
-		fmt.Printf("%s is a file and not a directory \n", dirname)
-		return
+		return fmt.Errorf("%s is a file and not a directory", dirname)
 	}
 	projDirs, err := indexDir(dirname, projIdentifier)
 	if err != nil {
-		fmt.Println(err)
-		return
+		return err
 	}
 	fmt.Printf("Indexed %d project directories . . .\n", len(projDirs))
 	projectStatusMap := make(map[string]string)
@@ -45,14 +41,14 @@ func InitDirs(args []string) {
 	}
 	err = db.WriteToDB(projectStatusMap, StatusBucket)
 	if err != nil {
-		log.Fatal(err)
-		return
+		return err
 	}
 	err = db.WriteToDB(projectPathMap, ProjectPaths)
 	if err != nil {
-		log.Fatal(err)
-		return
+		return err
 	}
+
+	return nil
 }
 
 // indexDir indexes a directory for project directories
