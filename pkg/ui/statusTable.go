@@ -16,7 +16,6 @@ import (
 // RenderTable: renders the given data as a table
 func RenderTable(data map[string]string) error {
 	var TableData [][]string
-
 	for p, status := range data {
 		alias, err := db.GetRecord(p, pkg.ProjectAliasBucket)
 		lastEdited := utils.GetLastModifiedTime(p)
@@ -35,7 +34,7 @@ func RenderTable(data map[string]string) error {
 		fmt.Println("pman init .")
 		fmt.Println("or")
 		fmt.Println("pman add <projectDir>")
-		return nil
+		return fmt.Errorf("no database initialised")
 	}
 	sort.Slice(TableData, func(i, j int) bool {
 		valI := TableData[i][1]
@@ -72,7 +71,6 @@ func RenderTable(data map[string]string) error {
 			if ok {
 				return baseStyle.Copy().Foreground(color)
 			}
-
 			color = statusColors["Default"]
 			return baseStyle.Copy().Foreground(color)
 		})
