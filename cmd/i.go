@@ -11,8 +11,8 @@ var iCmd = &cobra.Command{
 	Use:     "i",
 	Short:   "Launches pman in interactive mode",
 	Aliases: []string{"interactive", "iteractive"},
-	Run: func(cmd *cobra.Command, args []string) {
-		ui.Tui()
+	RunE: func(_ *cobra.Command, _ []string) error {
+		return ui.Tui()
 	},
 }
 

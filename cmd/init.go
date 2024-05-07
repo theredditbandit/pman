@@ -15,8 +15,8 @@ var initCmd = &cobra.Command{
 
     Running pman init <dirname> is the same as running: pman add <dirname>/*
     `,
-	Run: func(cmd *cobra.Command, args []string) {
-		pkg.InitDirs(args)
+	RunE: func(_ *cobra.Command, args []string) error {
+		return pkg.InitDirs(args)
 	},
 }
 

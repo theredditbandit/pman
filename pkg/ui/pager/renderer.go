@@ -2,7 +2,6 @@ package ui
 
 import (
 	"fmt"
-	"log"
 	"strings"
 
 	"github.com/charmbracelet/bubbles/viewport"
@@ -35,7 +34,7 @@ type model struct {
 	project  string
 }
 
-func (m model) Init() tea.Cmd {
+func (model) Init() tea.Cmd {
 	return nil
 }
 
@@ -101,11 +100,20 @@ func (m model) footerView() string {
 	return lipgloss.JoinHorizontal(lipgloss.Center, line, info)
 }
 
-func LaunchRenderer(file string) {
-	content := utils.ReadREADME(file)
+func LaunchRenderer(file string) error {
+	content, err := utils.ReadREADME(file)
+	if err != nil {
+		return err
+	}
+
+	breautifulContent, err := utils.BeautifyMD(content)
+	if err != nil {
+		return err
+	}
+
 	p := tea.NewProgram(
 		model{
-			content: utils.BeautifyMD(content),
+			content: breautifulContent,
 			project: file,
 		},
 		tea.WithAltScreen(),       // use the full size of the terminal in its "alternate screen buffer"
@@ -113,6 +121,8 @@ func LaunchRenderer(file string) {
 	)
 
 	if _, err := p.Run(); err != nil {
-		log.Fatal("could not run pager :", err)
+		return fmt.Errorf("could not run pager: %w", err)
 	}
+
+	return nil
 }

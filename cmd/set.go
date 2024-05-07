@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/spf13/cobra"
@@ -17,15 +18,14 @@ var setCmd = &cobra.Command{
 
     Common statuses: Indexed (default), Idea, Started, Paused, Completed, Aborted, Ongoing, Not Started
     `,
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		interactiveFlag, _ := cmd.Flags().GetBool("i") // TODO: Implement this
 		if interactiveFlag {
-			fmt.Println("Not implemented yet")
-			return
+			cmd.SilenceUsage = true
+			return errors.New("Not implemented yet")
 		}
 		if len(args) != 2 {
-			fmt.Println("Please provide a directory name")
-			return
+			return errors.New("Please provide a directory name")
 		}
 		var pname string
 		alias := args[0]
@@ -38,10 +38,11 @@ var setCmd = &cobra.Command{
 		}
 		err = db.UpdateRec(pname, status, StatusBucket)
 		if err != nil {
-			fmt.Println("Error updating record : ", err)
-			return
+			return fmt.Errorf("Error updating record : %w", err)
 		}
 		fmt.Printf("Project %s set to status %s\n", pname, status)
+
+		return nil
 	},
 }
 

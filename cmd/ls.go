@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/spf13/cobra"
 
@@ -17,19 +16,17 @@ var lsCmd = &cobra.Command{
 	Long: `List all indexed projects along with their status
     Usage : pman ls
     `,
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, _ []string) error {
 		filterFlag, _ := cmd.Flags().GetString("f")
 		data, err := db.GetAllRecords(StatusBucket)
 		if err != nil {
-			log.Fatal(err)
+			return err
 		}
 		if filterFlag != "" {
 			fmt.Println("Filtering by status : ", filterFlag)
-			data := utils.FilterByStatus(data, filterFlag)
-			ui.RenderTable(data)
-			return
+			data = utils.FilterByStatus(data, filterFlag)
 		}
-		ui.RenderTable(data)
+		return ui.RenderTable(data)
 	},
 }
 

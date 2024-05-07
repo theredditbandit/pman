@@ -12,8 +12,8 @@ var addCmd = &cobra.Command{
 	Long: `This command will add a directory to the project database.
     The directory will not be added if it does not contain a README.md.
     `,
-	Run: func(cmd *cobra.Command, args []string) {
-		pkg.InitDirs(args)
+	RunE: func(_ *cobra.Command, args []string) error {
+		return pkg.InitDirs(args)
 	},
 }
 
