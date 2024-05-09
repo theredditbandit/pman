@@ -102,10 +102,17 @@ func (m model) footerView() string {
 }
 
 func LaunchRenderer(file string) {
-	content := utils.ReadREADME(file)
+	content, err := utils.ReadREADME(file)
+	if err != nil {
+		log.Fatal("could not read README :", err)
+	}
+	modelContent, err := utils.BeautifyMD(content)
+	if err != nil {
+		log.Fatal("could not beautify markdown :", err)
+	}
 	p := tea.NewProgram(
 		model{
-			content: utils.BeautifyMD(content),
+			content: modelContent,
 			project: file,
 		},
 		tea.WithAltScreen(),       // use the full size of the terminal in its "alternate screen buffer"

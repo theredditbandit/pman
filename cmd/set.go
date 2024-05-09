@@ -1,11 +1,17 @@
 package cmd
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/spf13/cobra"
 
 	"github.com/theredditbandit/pman/pkg/db"
+)
+
+var (
+	ErrFlagNotImplemented error = errors.New("flag not implemented yet")
+	ErrBadUsageSetCmd error    = errors.New("bad usage of set command")
 )
 
 var setCmd = &cobra.Command{
@@ -17,15 +23,15 @@ var setCmd = &cobra.Command{
 
     Common statuses: Indexed (default), Idea, Started, Paused, Completed, Aborted, Ongoing, Not Started
     `,
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		interactiveFlag, _ := cmd.Flags().GetBool("i") // TODO: Implement this
 		if interactiveFlag {
 			fmt.Println("Not implemented yet")
-			return
+			return ErrFlagNotImplemented
 		}
 		if len(args) != 2 {
 			fmt.Println("Please provide a directory name")
-			return
+			return ErrBadUsageSetCmd
 		}
 		var pname string
 		alias := args[0]
@@ -39,9 +45,10 @@ var setCmd = &cobra.Command{
 		err = db.UpdateRec(db.DBName, pname, status, StatusBucket)
 		if err != nil {
 			fmt.Println("Error updating record : ", err)
-			return
+			return err
 		}
 		fmt.Printf("Project %s set to status %s\n", pname, status)
+		return nil
 	},
 }
 

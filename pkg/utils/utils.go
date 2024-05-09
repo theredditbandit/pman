@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -13,6 +14,11 @@ import (
 
 	"github.com/theredditbandit/pman/pkg"
 	"github.com/theredditbandit/pman/pkg/db"
+)
+
+var (
+	ErrBeautifyMD error = errors.New("error beautifying markdown")
+	ErrReadREADME error = errors.New("error reading README")
 )
 
 func TitleCase(s string) string {
@@ -74,33 +80,35 @@ func GetLastModifiedTime(pname string) string {
 }
 
 // BeautifyMD: returns styled markdown
-func BeautifyMD(data []byte) string {
+func BeautifyMD(data []byte) (string, error) {
 	r, err := glamour.NewTermRenderer(
 		glamour.WithAutoStyle(),
 		glamour.WithWordWrap(120),
 		glamour.WithAutoStyle(),
 	)
 	if err != nil {
-		log.Fatal("something went wrong while creating renderer: ", err)
+		log.Print("something went wrong while creating renderer: ", err)
+		return "", errors.Join(ErrBeautifyMD, err)
 	}
 	out, _ := r.Render(string(data))
-	return out
+	return out, nil
 }
 
 // ReadREADME: returns the byte array of README.md of a project
-func ReadREADME(projectName string) []byte {
+func ReadREADME(projectName string) ([]byte, error) {
 	actualName, err := db.GetRecord(db.DBName, projectName, pkg.ProjectAliasBucket)
 	if err == nil {
 		projectName = actualName
 	}
 	path, err := db.GetRecord(db.DBName, projectName, pkg.ProjectPaths)
 	if err != nil {
-		log.Fatalf("project: %v not a valid project\n", projectName)
+		log.Printf("project: %v not a valid project\n", projectName)
+		return nil, errors.Join(ErrReadREADME, err)
 	}
 	pPath := filepath.Join(path, "README.md")
 	data, err := os.ReadFile(pPath)
 	if err != nil {
 		log.Fatal("Something went wrong while reading README for ", projectName, "\nERR : ", err)
 	}
-	return data
+	return data, nil
 }

@@ -30,7 +30,7 @@ var (
 func WriteToDB(dbname string, data map[string]string, bucketName string) error {
 	db, err := bolt.Open(getDBLoc(dbname), 0o600, nil) // create the database if it doesn't exist then open it
 	if err != nil {
-		log.Printf("%v : %v", ErrOpenDB, err)
+		log.Printf("%v : %v \n", ErrOpenDB, err)
 		return errors.Join(ErrOpenDB, err)
 	}
 	defer db.Close()
@@ -53,7 +53,7 @@ func WriteToDB(dbname string, data map[string]string, bucketName string) error {
 func DeleteFromDb(dbname, key, bucketName string) error {
 	db, err := bolt.Open(getDBLoc(dbname), 0o600, nil) // create the database if it doesn't exist then open it
 	if err != nil {
-		log.Printf("%v : %v", ErrOpenDB, err)
+		log.Printf("%v : %v \n", ErrOpenDB, err)
 		return errors.Join(ErrOpenDB, err)
 	}
 	defer db.Close()
@@ -89,7 +89,7 @@ func GetRecord(dbname, key, bucketName string) (string, error) {
 	var rec string
 	db, err := bolt.Open(getDBLoc(dbname), 0o600, nil)
 	if err != nil {
-		log.Printf("%v : %v", ErrOpenDB, err)
+		log.Printf("%v : %v \n", ErrOpenDB, err)
 		return "", errors.Join(ErrOpenDB, err)
 	}
 	defer db.Close()
@@ -115,7 +115,7 @@ func GetRecord(dbname, key, bucketName string) (string, error) {
 func GetAllRecords(dbname, bucketName string) (map[string]string, error) {
 	db, err := bolt.Open(getDBLoc(dbname), 0o600, nil)
 	if err != nil {
-		log.Printf("%v : %v", ErrOpenDB, err)
+		log.Printf("%v : %v \n", ErrOpenDB, err)
 		return map[string]string{}, errors.Join(ErrOpenDB, err)
 	}
 	defer db.Close()
@@ -123,7 +123,7 @@ func GetAllRecords(dbname, bucketName string) (map[string]string, error) {
 	err = db.View(func(tx *bolt.Tx) error {
 		bucket := tx.Bucket([]byte(bucketName))
 		if bucket == nil {
-			fmt.Print("Database not found \nThis could be because no project dir has been initialized yet")
+			fmt.Print("Database not found \nThis could be because no project dir has been initialized yet \n")
 			return ErrBucketNotFound
 		}
 		err := bucket.ForEach(func(k, v []byte) error {

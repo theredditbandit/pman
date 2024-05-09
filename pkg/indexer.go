@@ -17,10 +17,10 @@ const (
 )
 
 var (
-	ErrDirname    = errors.New("error providing a directory name")
-	ErrDirInvalid = errors.New("error providing a valid directory name")
-	ErrIsNotDir   = errors.New("error providing a file instead of a directory")
-	ErrIndexDir   = errors.New("error indexing directory")
+	ErrDirname    error = errors.New("error providing a directory name")
+	ErrDirInvalid error = errors.New("error providing a valid directory name")
+	ErrIsNotDir   error = errors.New("error providing a file instead of a directory")
+	ErrIndexDir   error = errors.New("error indexing directory")
 )
 
 // InitDirs indexes a directory for project directories and writes the data to the db
