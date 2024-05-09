@@ -21,7 +21,7 @@ avlpn or something smaller and use that to query pman`,
 		}
 		pname := args[0]
 		alias := args[1]
-		_, err := db.GetRecord(pname, StatusBucket)
+		_, err := db.GetRecord(db.DBName, pname, StatusBucket)
 		if err != nil {
 			fmt.Printf("%s project does not exist in db", pname)
 			return
@@ -29,8 +29,8 @@ avlpn or something smaller and use that to query pman`,
 		fmt.Printf("Aliasing %s to %s \n", pname, alias)
 		data := map[string]string{alias: pname}
 		revData := map[string]string{pname: alias}
-		db.WriteToDB(data, ProjectAliasBucket)
-		db.WriteToDB(revData, ProjectAliasBucket)
+		db.WriteToDB(db.DBName, data, ProjectAliasBucket)
+		db.WriteToDB(db.DBName, revData, ProjectAliasBucket)
 	},
 }
 

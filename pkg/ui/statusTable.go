@@ -18,7 +18,7 @@ func RenderTable(data map[string]string) error {
 	var TableData [][]string
 
 	for p, status := range data {
-		alias, err := db.GetRecord(p, pkg.ProjectAliasBucket)
+		alias, err := db.GetRecord(db.DBName, p, pkg.ProjectAliasBucket)
 		lastEdited := utils.GetLastModifiedTime(p)
 		if err == nil {
 			pname := fmt.Sprintf("%s (%s)", p, alias)

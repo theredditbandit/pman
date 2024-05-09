@@ -21,12 +21,12 @@ var statusCmd = &cobra.Command{
 			return
 		}
 		projName := args[0]
-		actualName, err := db.GetRecord(projName, ProjectAliasBucket)
+		actualName, err := db.GetRecord(db.DBName, projName, ProjectAliasBucket)
 		if err == nil { // check if user has supplied an alias instead of actual project name
 			alias = projName
 			projName = actualName
 		}
-		status, err := db.GetRecord(projName, StatusBucket)
+		status, err := db.GetRecord(db.DBName, projName, StatusBucket)
 		if err != nil {
 			fmt.Printf("%s is not a valid project name : Err -> %s", projName, err)
 			return

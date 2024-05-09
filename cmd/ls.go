@@ -19,7 +19,7 @@ var lsCmd = &cobra.Command{
     `,
 	Run: func(cmd *cobra.Command, args []string) {
 		filterFlag, _ := cmd.Flags().GetString("f")
-		data, err := db.GetAllRecords(StatusBucket)
+		data, err := db.GetAllRecords(db.DBName, StatusBucket)
 		if err != nil {
 			log.Fatal(err)
 		}

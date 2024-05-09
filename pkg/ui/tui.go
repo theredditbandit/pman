@@ -82,7 +82,7 @@ func newModel() model {
 		delegateKeys = newDelegateKeyMap()
 	)
 
-	data, err := db.GetAllRecords(pkg.StatusBucket)
+	data, err := db.GetAllRecords(db.DBName, pkg.StatusBucket)
 	if err != nil {
 		log.Fatal(err)
 	}

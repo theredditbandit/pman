@@ -30,13 +30,13 @@ var setCmd = &cobra.Command{
 		var pname string
 		alias := args[0]
 		status := args[1]
-		project, err := db.GetRecord(alias, ProjectAliasBucket)
+		project, err := db.GetRecord(db.DBName, alias, ProjectAliasBucket)
 		if err == nil {
 			pname = project
 		} else {
 			pname = alias
 		}
-		err = db.UpdateRec(pname, status, StatusBucket)
+		err = db.UpdateRec(db.DBName, pname, status, StatusBucket)
 		if err != nil {
 			fmt.Println("Error updating record : ", err)
 			return

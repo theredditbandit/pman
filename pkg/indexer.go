@@ -1,6 +1,7 @@
 package pkg
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -10,31 +11,38 @@ import (
 )
 
 const (
-	StatusBucket       = "projects"
-	ProjectPaths       = "projectPaths"
-	ProjectAliasBucket = "projectAliases"
+	StatusBucket       string = "projects"
+	ProjectPaths       string = "projectPaths"
+	ProjectAliasBucket string = "projectAliases"
+)
+
+var (
+	ErrDirname    = errors.New("error providing a directory name")
+	ErrDirInvalid = errors.New("error providing a valid directory name")
+	ErrIsNotDir   = errors.New("error providing a file instead of a directory")
+	ErrIndexDir   = errors.New("error indexing directory")
 )
 
 // InitDirs indexes a directory for project directories and writes the data to the db
-func InitDirs(args []string) {
+func InitDirs(args []string) error {
 	// the file which identifies a project directory
 	projIdentifier := "README.md"
 	if len(args) != 1 {
 		fmt.Println("Please provide a directory name")
-		return
+		return ErrDirname
 	}
 	dirname := args[0]
 	if stat, err := os.Stat(dirname); os.IsNotExist(err) {
 		fmt.Printf("%s is not a directory \n", dirname)
-		return
+		return ErrDirInvalid
 	} else if !stat.IsDir() {
 		fmt.Printf("%s is a file and not a directory \n", dirname)
-		return
+		return ErrIsNotDir
 	}
 	projDirs, err := indexDir(dirname, projIdentifier)
 	if err != nil {
 		fmt.Println(err)
-		return
+		return ErrIndexDir
 	}
 	fmt.Printf("Indexed %d project directories . . .\n", len(projDirs))
 	projectStatusMap := make(map[string]string)
@@ -43,16 +51,17 @@ func InitDirs(args []string) {
 		projectStatusMap[filepath.Base(k)] = v // filepath.Base(k) : project name
 		projectPathMap[filepath.Base(k)] = k
 	}
-	err = db.WriteToDB(projectStatusMap, StatusBucket)
+	err = db.WriteToDB(db.DBName, projectStatusMap, StatusBucket)
 	if err != nil {
-		log.Fatal(err)
-		return
+		log.Print(err)
+		return err
 	}
-	err = db.WriteToDB(projectPathMap, ProjectPaths)
+	err = db.WriteToDB(db.DBName, projectPathMap, ProjectPaths)
 	if err != nil {
-		log.Fatal(err)
-		return
+		log.Print(err)
+		return err
 	}
+	return nil
 }
 
 // indexDir indexes a directory for project directories
