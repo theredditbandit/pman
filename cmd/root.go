@@ -7,16 +7,17 @@ import (
 )
 
 const (
-	StatusBucket       = "projects"
-	ProjectPathBucket  = "projectPaths"
-	ProjectAliasBucket = "projectAliases"
-	version            = "1.0"
+	StatusBucket       string = "projects"
+	ProjectPathBucket  string = "projectPaths"
+	ProjectAliasBucket string = "projectAliases"
+	version            string = "1.0"
 )
 
 var rootCmd = &cobra.Command{
-	Use:     "pman",
-	Short:   "A cli project manager",
-	Version: version,
+	Use:          "pman",
+	Short:        "A cli project manager",
+	Version:      version,
+	SilenceUsage: true,
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) == 0 {
 			cmd.Help()
