@@ -55,6 +55,19 @@ func Test_GetRecord(t *testing.T) {
 		require.Equal(t, expectedValue, actualValue)
 	})
 
+	t.Run("Test GetRecord with empty dbname", func(t *testing.T) {
+		dbname := ""
+		key := "testKey"
+		bucketName := "testBucket"
+		expectedErr := db.ErrDBNameEmpty
+
+		actualValue, err := db.GetRecord(dbname, key, bucketName)
+
+		require.Error(t, err)
+		require.Equal(t, expectedErr, err)
+		require.Empty(t, actualValue)
+	})
+
 	t.Run("Test GetRecord with key not found", func(t *testing.T) {
 		dbname := db.DBTestName
 		DBLoc, err := db.GetDBLoc(dbname)
@@ -213,6 +226,18 @@ func Test_DeleteFromDb(t *testing.T) {
 		require.NoError(t, err)
 	})
 
+	t.Run("Test DeleteFromDb with empty dbname", func(t *testing.T) {
+		dbname := ""
+		key := "key1"
+		bucketName := "testBucket"
+		expectedErr := db.ErrDBNameEmpty
+
+		err := db.DeleteFromDb(dbname, key, bucketName)
+
+		require.Error(t, err)
+		require.ErrorIs(t, err, expectedErr)
+	})
+
 	t.Run("Test DeleteFromDb with key not found", func(t *testing.T) {
 		dbname := db.DBTestName
 		DBLoc, err := db.GetDBLoc(dbname)
@@ -271,6 +296,19 @@ func Test_ListAllRecords(t *testing.T) {
 		require.Equal(t, data, records)
 	})
 
+	t.Run("Test ListAllRecords with empty dbname", func(t *testing.T) {
+		dbname := ""
+		bucketName := "testBucket"
+		expectedErr := db.ErrDBNameEmpty
+		expectedValue := map[string]string{}
+
+		records, err := db.GetAllRecords(dbname, bucketName)
+
+		require.Error(t, err)
+		require.ErrorIs(t, err, expectedErr)
+		require.Equal(t, records, expectedValue)
+	})
+
 	t.Run("Test ListAllRecords with bucket not found", func(t *testing.T) {
 		dbname := db.DBTestName
 		bucketName := "testBucket"
@@ -281,5 +319,117 @@ func Test_ListAllRecords(t *testing.T) {
 		require.Error(t, err)
 		require.ErrorIs(t, err, expectedErr)
 		require.Nil(t, records)
+	})
+}
+func Test_UpdateRec(t *testing.T) {
+	t.Run("Test UpdateRec", func(t *testing.T) {
+		dbname := db.DBTestName
+		DBLoc, err := db.GetDBLoc(dbname)
+		require.NoError(t, err)
+		defer os.Remove(DBLoc)
+
+		data := map[string]string{
+			"key1": "value1",
+			"key2": "value2",
+			"key3": "value3",
+		}
+		bucketName := "testBucket"
+		key := "key1"
+		newValue := "updatedValue"
+
+		err = db.WriteToDB(dbname, data, bucketName)
+		require.NoError(t, err)
+
+		err = db.UpdateRec(dbname, key, newValue, bucketName)
+		require.NoError(t, err)
+
+		// Verify that the value was updated
+		db, err := bolt.Open(DBLoc, 0o600, nil)
+		require.NoError(t, err)
+		defer db.Close()
+
+		err = db.View(func(tx *bolt.Tx) error {
+			bucket := tx.Bucket([]byte(bucketName))
+			require.NotNil(t, bucket)
+
+			value := bucket.Get([]byte(key))
+			require.Equal(t, []byte(newValue), value)
+			return nil
+		})
+		require.NoError(t, err)
+	})
+
+	t.Run("Test UpdateRec with empty dbname", func(t *testing.T) {
+		dbname := ""
+		key := "key1"
+		newValue := "updatedValue"
+		bucketName := "testBucket"
+		err := db.UpdateRec(dbname, key, newValue, bucketName)
+
+		require.Error(t, err)
+		require.Equal(t, db.ErrDBNameEmpty, err)
+	})
+
+	t.Run("Test UpdateRec with key not found", func(t *testing.T) {
+		dbname := db.DBTestName
+		DBLoc, err := db.GetDBLoc(dbname)
+		require.NoError(t, err)
+		defer os.Remove(DBLoc)
+
+		data := map[string]string{
+			"key1": "value1",
+			"key2": "value2",
+			"key3": "value3",
+		}
+		bucketName := "testBucket"
+		key := "key4"
+		newValue := "updatedValue"
+
+		err = db.WriteToDB(dbname, data, bucketName)
+		require.NoError(t, err)
+
+		err = db.UpdateRec(dbname, key, newValue, bucketName)
+
+		require.Error(t, err)
+		require.Equal(t, db.ErrProjectNotFound, err)
+	})
+
+	t.Run("Test UpdateRec with bucket not found", func(t *testing.T) {
+		dbname := db.DBTestName
+		key := "key1"
+		newValue := "updatedValue"
+		bucketName := "testBucket"
+		expectedErr := db.ErrBucketNotFound
+
+		err := db.UpdateRec(dbname, key, newValue, bucketName)
+
+		require.Error(t, err)
+		require.Equal(t, expectedErr, err)
+	})
+}
+
+func Test_DeleteDb(t *testing.T) {
+	t.Run("Test DeleteDb", func(t *testing.T) {
+		dbname := db.DBTestName
+		DBLoc, err := db.GetDBLoc(dbname)
+		require.NoError(t, err)
+		defer os.Remove(DBLoc)
+
+		err = db.DeleteDb(dbname)
+		require.NoError(t, err)
+
+		// Verify that the database file is deleted
+		_, err = os.Stat(DBLoc)
+		require.True(t, os.IsNotExist(err))
+	})
+
+	t.Run("Test DeleteDb with empty dbname", func(t *testing.T) {
+		dbname := ""
+		expectedErr := db.ErrDBNameEmpty
+
+		err := db.DeleteDb(dbname)
+
+		require.Error(t, err)
+		require.Equal(t, expectedErr, err)
 	})
 }

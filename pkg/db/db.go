@@ -31,13 +31,10 @@ var (
 func WriteToDB(dbname string, data map[string]string, bucketName string) error {
 	DBLoc, err := GetDBLoc(dbname)
 	if err != nil {
-		return errors.Join(ErrOpenDB, err)
-	}
-	db, err := bolt.Open(DBLoc, 0o600, nil) // create the database if it doesn't exist then open it
-	if err != nil {
 		log.Printf("%v : %v \n", ErrOpenDB, err)
 		return errors.Join(ErrOpenDB, err)
 	}
+	db, _ := bolt.Open(DBLoc, 0o600, nil) // create the database if it doesn't exist then open it
 	defer db.Close()
 	err = db.Update(func(tx *bolt.Tx) error {
 		bucket, err := tx.CreateBucketIfNotExists([]byte(bucketName))
@@ -58,13 +55,10 @@ func WriteToDB(dbname string, data map[string]string, bucketName string) error {
 func DeleteFromDb(dbname, key, bucketName string) error {
 	DBLoc, err := GetDBLoc(dbname)
 	if err != nil {
-		return errors.Join(ErrOpenDB, err)
-	}
-	db, err := bolt.Open(DBLoc, 0o600, nil) // create the database if it doesn't exist then open it
-	if err != nil {
 		log.Printf("%v : %v \n", ErrOpenDB, err)
 		return errors.Join(ErrOpenDB, err)
 	}
+	db, _ := bolt.Open(DBLoc, 0o600, nil) // create the database if it doesn't exist then open it
 	defer db.Close()
 	err = db.Update(func(tx *bolt.Tx) error {
 		bucket := tx.Bucket([]byte(bucketName))
@@ -100,13 +94,11 @@ func GetRecord(dbname, key, bucketName string) (string, error) {
 	var rec string
 	DBLoc, err := GetDBLoc(dbname)
 	if err != nil {
+		log.Printf("%v : %v \n", ErrOpenDB, err)
 		return "", err
 	}
-	db, err := bolt.Open(DBLoc, 0o600, nil)
-	if err != nil {
-		log.Printf("%v : %v \n", ErrOpenDB, err)
-		return "", errors.Join(ErrOpenDB, err)
-	}
+	db, _ := bolt.Open(DBLoc, 0o600, nil)
+
 	defer db.Close()
 	err = db.View(func(tx *bolt.Tx) error {
 		bucket := tx.Bucket([]byte(bucketName))
@@ -130,13 +122,11 @@ func GetRecord(dbname, key, bucketName string) (string, error) {
 func GetAllRecords(dbname, bucketName string) (map[string]string, error) {
 	DBLoc, err := GetDBLoc(dbname)
 	if err != nil {
+		log.Printf("%v : %v \n", ErrOpenDB, err)
+
 		return map[string]string{}, err
 	}
-	db, err := bolt.Open(DBLoc, 0o600, nil)
-	if err != nil {
-		log.Printf("%v : %v \n", ErrOpenDB, err)
-		return map[string]string{}, errors.Join(ErrOpenDB, err)
-	}
+	db, _ := bolt.Open(DBLoc, 0o600, nil)
 	defer db.Close()
 	records := make(map[string]string)
 	err = db.View(func(tx *bolt.Tx) error {
@@ -164,13 +154,11 @@ func GetAllRecords(dbname, bucketName string) (map[string]string, error) {
 func UpdateRec(dbname, key, val, bucketName string) error {
 	DBLoc, err := GetDBLoc(dbname)
 	if err != nil {
+		log.Print(err)
 		return err
 	}
-	db, err := bolt.Open(DBLoc, 0o600, nil)
-	if err != nil {
-		log.Print(err)
-		return errors.Join(ErrOpenDB, err)
-	}
+	db, _ := bolt.Open(DBLoc, 0o600, nil)
+
 	defer db.Close()
 	err = db.Update(func(tx *bolt.Tx) error {
 		bucket := tx.Bucket([]byte(bucketName))
@@ -192,9 +180,6 @@ func DeleteDb(dbname string) error {
 	if err != nil {
 		return err
 	}
-	err = os.Remove(DBLoc)
-	if err != nil {
-		return errors.Join(ErrClearDB, err)
-	}
+	os.Remove(DBLoc)
 	return nil
 }
