@@ -57,7 +57,7 @@ func GetLastModifiedTime(pname string) string {
 	if err != nil {
 		return "Something went wrong"
 	}
-	err = filepath.Walk(pPath, func(path string, info os.FileInfo, err error) error {
+	err = filepath.Walk(pPath, func(_ string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
@@ -108,7 +108,7 @@ func ReadREADME(projectName string) ([]byte, error) {
 	pPath := filepath.Join(path, "README.md")
 	data, err := os.ReadFile(pPath)
 	if err != nil {
-		log.Fatal("Something went wrong while reading README for ", projectName, "\nERR : ", err)
+		return nil, fmt.Errorf("Something went wrong while reading README for %s: %w", projectName, err)
 	}
 	return data, nil
 }

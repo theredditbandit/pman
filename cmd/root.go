@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"os"
+	"errors"
 
 	"github.com/spf13/cobra"
 )
@@ -14,24 +14,18 @@ const (
 )
 
 var rootCmd = &cobra.Command{
-	Use:          "pman",
-	Short:        "A cli project manager",
-	Version:      version,
+	Use:     "pman",
+	Short:   "A cli project manager",
+	Version: version,
 	SilenceUsage: true,
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(_ *cobra.Command, args []string) error {
 		if len(args) == 0 {
-			cmd.Help()
-			return
+			return errors.New("this command has no argument")
 		}
+		return nil
 	},
 }
 
-func Execute() {
-	err := rootCmd.Execute()
-	if err != nil {
-		os.Exit(1)
-	}
-}
-
-func init() {
+func Execute() error {
+	return rootCmd.Execute()
 }

@@ -17,6 +17,7 @@ var resetCmd = &cobra.Command{
 			fmt.Println(err)
 			return err
 		}
+
 		fmt.Println("Successfully reset the database, run pman init to reindex the projects")
 		return nil
 	},

@@ -23,7 +23,7 @@ var (
 	ErrIndexDir   error = errors.New("error indexing directory")
 )
 
-// InitDirs indexes a directory for project directories and writes the data to the db
+// InitDirs indexes a directory for project directories and writes the data to the DB
 func InitDirs(args []string) error {
 	// the file which identifies a project directory
 	projIdentifier := "README.md"

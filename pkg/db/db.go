@@ -76,7 +76,7 @@ func DeleteFromDb(dbname, key, bucketName string) error {
 func GetDBLoc(dbname string) (string, error) {
 	usr, err := user.Current()
 	if err != nil {
-		panic(err)
+		return "", err
 	}
 	if dbname == "" {
 		return "", ErrDBNameEmpty
@@ -84,7 +84,10 @@ func GetDBLoc(dbname string) (string, error) {
 	dbname = dbname + ".db"
 	dbPath := filepath.Join(usr.HomeDir, ".local", "share", "pman", dbname)
 	if _, err := os.Stat(filepath.Dir(dbPath)); os.IsNotExist(err) {
-		os.MkdirAll(filepath.Dir(dbPath), 0o755)
+		err = os.MkdirAll(filepath.Dir(dbPath), 0o755)
+		if err != nil {
+			return "", err
+		}
 	}
 	return dbPath, nil
 }

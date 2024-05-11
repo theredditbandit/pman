@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/spf13/cobra"
@@ -10,7 +11,7 @@ import (
 )
 
 var (
-	ErrBadUsageStatusCmd error = fmt.Errorf("bad usage of status command")
+	ErrBadUsageStatusCmd error = errors.New("bad usage of status command")
 )
 
 // statusCmd represents the status command
