@@ -24,7 +24,7 @@ func Test_GetDBLoc(t *testing.T) {
 			os.Remove(actualPath)
 		})
 
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		assert.Contains(t, actualPath, expectedWords[0])
 		assert.Contains(t, actualPath, expectedWords[1])
 		assert.Contains(t, actualPath, expectedWords[2])
@@ -45,7 +45,7 @@ func Test_GetDBLoc(t *testing.T) {
 func Test_GetRecord(t *testing.T) {
 	t.Run("Test GetRecord", func(t *testing.T) {
 		actualPath, err := db.GetDBLoc(dbname)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 
 		t.Cleanup(func() {
 			os.Remove(actualPath)
@@ -54,10 +54,10 @@ func Test_GetRecord(t *testing.T) {
 		expectedValue := "testValue"
 
 		err = db.WriteToDB(dbname, map[string]string{key: expectedValue}, bucketName)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 
 		actualValue, err := db.GetRecord(dbname, key, bucketName)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		assert.Equal(t, expectedValue, actualValue)
 	})
 
@@ -76,14 +76,14 @@ func Test_GetRecord(t *testing.T) {
 	t.Run("Test GetRecord with key not found", func(t *testing.T) {
 		expectedErr := db.ErrKeyNotFound
 		actualPath, err := db.GetDBLoc(dbname)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 
 		t.Cleanup(func() {
 			os.Remove(actualPath)
 		})
 
 		err = db.WriteToDB(dbname, map[string]string{}, bucketName)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 
 		actualValue, err := db.GetRecord(dbname, key, bucketName)
 
@@ -103,7 +103,7 @@ func Test_GetRecord(t *testing.T) {
 func Test_WriteToDB(t *testing.T) {
 	t.Run("Test WriteToDB", func(t *testing.T) {
 		actualPath, err := db.GetDBLoc(dbname)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 
 		t.Cleanup(func() {
 			os.Remove(actualPath)
@@ -117,11 +117,11 @@ func Test_WriteToDB(t *testing.T) {
 		bucketName := "testBucket"
 
 		err = db.WriteToDB(dbname, data, bucketName)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 
 		// Verify that the data was written correctly
 		db, err := bolt.Open(actualPath, 0o600, nil)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		defer db.Close()
 
 		err = db.View(func(tx *bolt.Tx) error {
@@ -135,12 +135,12 @@ func Test_WriteToDB(t *testing.T) {
 
 			return nil
 		})
-		assert.NoError(t, err)
+		require.NoError(t, err)
 	})
 
 	t.Run("Test WriteToDB with empty bucketname", func(t *testing.T) {
 		actualPath, err := db.GetDBLoc(dbname)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 
 		t.Cleanup(func() {
 			os.Remove(actualPath)
@@ -160,7 +160,7 @@ func Test_WriteToDB(t *testing.T) {
 
 	t.Run("Test WriteToDB with empty map key", func(t *testing.T) {
 		actualPath, err := db.GetDBLoc(dbname)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 
 		t.Cleanup(func() {
 			os.Remove(actualPath)
@@ -194,7 +194,7 @@ func Test_DeleteFromDb(t *testing.T) {
 	t.Run("Test DeleteFromDb", func(t *testing.T) {
 
 		actualPath, err := db.GetDBLoc(dbname)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 
 		t.Cleanup(func() {
 			os.Remove(actualPath)
@@ -208,14 +208,14 @@ func Test_DeleteFromDb(t *testing.T) {
 		key := "key1"
 
 		err = db.WriteToDB(dbname, data, bucketName)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 
 		err = db.DeleteFromDb(dbname, key, bucketName)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 
 		// Verify that the key was deleted
 		db, err := bolt.Open(actualPath, 0o600, nil)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		defer db.Close()
 
 		err = db.View(func(tx *bolt.Tx) error {
@@ -227,7 +227,7 @@ func Test_DeleteFromDb(t *testing.T) {
 
 			return nil
 		})
-		assert.NoError(t, err)
+		require.NoError(t, err)
 	})
 
 	t.Run("Test DeleteFromDb with empty dbname", func(t *testing.T) {
@@ -243,7 +243,7 @@ func Test_DeleteFromDb(t *testing.T) {
 	t.Run("Test DeleteFromDb with key not found", func(t *testing.T) {
 
 		actualPath, err := db.GetDBLoc(dbname)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 
 		t.Cleanup(func() {
 			os.Remove(actualPath)
@@ -257,11 +257,11 @@ func Test_DeleteFromDb(t *testing.T) {
 		key := "key4"
 
 		err = db.WriteToDB(dbname, data, bucketName)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 
 		err = db.DeleteFromDb(dbname, key, bucketName)
 
-		assert.NoError(t, err)
+		require.NoError(t, err)
 	})
 
 	t.Run("Test DeleteFromDb with bucket not found", func(t *testing.T) {
@@ -279,7 +279,7 @@ func Test_ListAllRecords(t *testing.T) {
 	t.Run("Test ListAllRecords", func(t *testing.T) {
 
 		actualPath, err := db.GetDBLoc(dbname)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 
 		t.Cleanup(func() {
 			os.Remove(actualPath)
@@ -292,12 +292,12 @@ func Test_ListAllRecords(t *testing.T) {
 		}
 
 		err = db.WriteToDB(dbname, data, bucketName)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 
 		records, err := db.GetAllRecords(dbname, bucketName)
 
-		assert.NoError(t, err)
-		assert.Equal(t,data, records)
+		require.NoError(t, err)
+		assert.Equal(t, data, records)
 	})
 
 	t.Run("Test ListAllRecords with empty dbname", func(t *testing.T) {
@@ -324,7 +324,7 @@ func Test_UpdateRec(t *testing.T) {
 	t.Run("Test UpdateRec", func(t *testing.T) {
 
 		actualPath, err := db.GetDBLoc(dbname)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 
 		t.Cleanup(func() {
 			os.Remove(actualPath)
@@ -340,14 +340,14 @@ func Test_UpdateRec(t *testing.T) {
 		newValue := "updatedValue"
 
 		err = db.WriteToDB(dbname, data, bucketName)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 
 		err = db.UpdateRec(dbname, key, newValue, bucketName)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 
 		// Verify that the value was updated
 		db, err := bolt.Open(actualPath, 0o600, nil)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 		defer db.Close()
 
 		err = db.View(func(tx *bolt.Tx) error {
@@ -358,7 +358,7 @@ func Test_UpdateRec(t *testing.T) {
 			assert.Equal(t, []byte(newValue), value)
 			return nil
 		})
-		assert.NoError(t, err)
+		require.NoError(t, err)
 	})
 
 	t.Run("Test UpdateRec with empty dbname", func(t *testing.T) {
@@ -373,7 +373,7 @@ func Test_UpdateRec(t *testing.T) {
 	t.Run("Test UpdateRec with key not found", func(t *testing.T) {
 
 		actualPath, err := db.GetDBLoc(dbname)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 
 		t.Cleanup(func() {
 			os.Remove(actualPath)
@@ -388,7 +388,7 @@ func Test_UpdateRec(t *testing.T) {
 		newValue := "updatedValue"
 
 		err = db.WriteToDB(dbname, data, bucketName)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 
 		err = db.UpdateRec(dbname, key, newValue, bucketName)
 
@@ -410,14 +410,14 @@ func Test_UpdateRec(t *testing.T) {
 func Test_DeleteDb(t *testing.T) {
 	t.Run("Test DeleteDb", func(t *testing.T) {
 		actualPath, err := db.GetDBLoc(dbname)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 
 		t.Cleanup(func() {
 			os.Remove(actualPath)
 		})
 
 		err = db.DeleteDb(dbname)
-		assert.NoError(t, err)
+		require.NoError(t, err)
 
 		// Verify that the database file is deleted
 		_, err = os.Stat(actualPath)
