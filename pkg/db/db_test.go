@@ -21,7 +21,7 @@ func Test_GetDBLoc(t *testing.T) {
 		actualPath, err := db.GetDBLoc(dbname)
 
 		t.Cleanup(func() {
-			os.Remove(actualPath)
+			_ = os.Remove(actualPath)
 		})
 
 		require.NoError(t, err)
@@ -48,7 +48,7 @@ func Test_GetRecord(t *testing.T) {
 		require.NoError(t, err)
 
 		t.Cleanup(func() {
-			os.Remove(actualPath)
+			_ = os.Remove(actualPath)
 		})
 
 		expectedValue := "testValue"
@@ -79,7 +79,7 @@ func Test_GetRecord(t *testing.T) {
 		require.NoError(t, err)
 
 		t.Cleanup(func() {
-			os.Remove(actualPath)
+			_ = os.Remove(actualPath)
 		})
 
 		err = db.WriteToDB(dbname, map[string]string{}, bucketName)
@@ -106,7 +106,7 @@ func Test_WriteToDB(t *testing.T) {
 		require.NoError(t, err)
 
 		t.Cleanup(func() {
-			os.Remove(actualPath)
+			_ = os.Remove(actualPath)
 		})
 
 		data := map[string]string{
@@ -138,12 +138,12 @@ func Test_WriteToDB(t *testing.T) {
 		require.NoError(t, err)
 	})
 
-	t.Run("Test WriteToDB with empty bucketname", func(t *testing.T) {
+	t.Run("Test WriteToDB with empty bucket name", func(t *testing.T) {
 		actualPath, err := db.GetDBLoc(dbname)
 		require.NoError(t, err)
 
 		t.Cleanup(func() {
-			os.Remove(actualPath)
+			_ = os.Remove(actualPath)
 		})
 
 		data := map[string]string{
