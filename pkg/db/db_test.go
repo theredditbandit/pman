@@ -37,7 +37,7 @@ func Test_GetDBLoc(t *testing.T) {
 
 		actualPath, err := db.GetDBLoc(dbname)
 
-		assert.ErrorIs(t, err, expectedErr)
+		require.ErrorIs(t, err, expectedErr)
 		assert.Empty(t, actualPath)
 	})
 }
