@@ -19,7 +19,7 @@ var statusCmd = &cobra.Command{
 	Use:   "status",
 	Short: "Get the status of a project",
 	Long:  `Query the database for the status of a project.`,
-	RunE: func(cmd *cobra.Command, args []string) error {
+	RunE: func(_ *cobra.Command, args []string) error {
 		var alias string
 		if len(args) != 1 {
 			fmt.Println("Please provide a project name")

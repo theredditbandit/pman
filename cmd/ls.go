@@ -18,17 +18,19 @@ var lsCmd = &cobra.Command{
     `,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		filterFlag, _ := cmd.Flags().GetString("f")
+		oldUi, _ := cmd.Flags().GetBool("o")
 		data, err := db.GetAllRecords(db.DBName, StatusBucket)
 		if err != nil {
 			return err
 		}
 		if filterFlag != "" {
 			fmt.Println("Filtering by status : ", filterFlag)
-			data := utils.FilterByStatus(data, filterFlag)
-			ui.RenderTable(data)
+			data = utils.FilterByStatus(data, filterFlag)
 		}
-		ui.RenderTable(data)
-		return nil
+		if oldUi {
+			return ui.RenderTable(data)
+		}
+		return ui.RenderInteractiveTable(data)
 	},
 }
 

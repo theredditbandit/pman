@@ -10,14 +10,14 @@ import (
 )
 
 var (
-	ErrBadUsageDelCmd error = errors.New("bad usage of delete command")
+	ErrBadUsageDelCmd = errors.New("bad usage of delete command")
 )
 
 var delCmd = &cobra.Command{
 	Use:     "delete",
 	Short:   "Deletes a project from the index database. This does not delete the project from the filesystem",
 	Aliases: []string{"del", "d"},
-	RunE: func(cmd *cobra.Command, args []string) error {
+	RunE: func(_ *cobra.Command, args []string) error {
 		if len(args) != 1 {
 			fmt.Println("Usage : pman delete <projectName>")
 			return ErrBadUsageDelCmd

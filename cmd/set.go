@@ -10,8 +10,8 @@ import (
 )
 
 var (
-	ErrFlagNotImplemented error = errors.New("flag not implemented yet")
-	ErrBadUsageSetCmd error    = errors.New("bad usage of set command")
+	ErrFlagNotImplemented = errors.New("flag not implemented yet")
+	ErrBadUsageSetCmd     = errors.New("bad usage of set command")
 )
 
 var setCmd = &cobra.Command{
@@ -26,7 +26,7 @@ var setCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		interactiveFlag, _ := cmd.Flags().GetBool("i") // TODO: Implement this
 		if interactiveFlag {
-			fmt.Println("Not implemented yet")
+			cmd.SilenceUsage = true
 			return ErrFlagNotImplemented
 		}
 		if len(args) != 2 {

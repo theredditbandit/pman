@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	ErrBadUsageAliasCmd error = errors.New("bad usage of alias command")
+	ErrBadUsageAliasCmd = errors.New("bad usage of alias command")
 )
 
 // aliasCmd represents the alias command
@@ -19,7 +19,7 @@ var aliasCmd = &cobra.Command{
 	Short: "Sets the alias for a project, whose name might be too big",
 	Long: `The idea is instead of having to type a-very-long-project-name-every-time you can alias it to
 avlpn or something smaller and use that to query pman`,
-	RunE: func(cmd *cobra.Command, args []string) error {
+	RunE: func(_ *cobra.Command, args []string) error {
 		if len(args) != 2 {
 			fmt.Println("Usage: pman alias <a-long-project-name> <alias>")
 			return ErrBadUsageAliasCmd

@@ -17,8 +17,8 @@ import (
 )
 
 var (
-	ErrBeautifyMD error = errors.New("error beautifying markdown")
-	ErrReadREADME error = errors.New("error reading README")
+	ErrBeautifyMD = errors.New("error beautifying markdown")
+	ErrReadREADME = errors.New("error reading README")
 )
 
 func TitleCase(s string) string {
@@ -41,9 +41,9 @@ func PrintData(data map[string]string) {
 	for k, v := range data {
 		alias, err := db.GetRecord(db.DBName, k, pkg.ProjectAliasBucket)
 		if err == nil {
-			fmt.Printf("%s : %s (%s) \n", TitleCase(v), k, alias)
+			log.Printf("%s : %s (%s) \n", TitleCase(v), k, alias)
 		} else {
-			fmt.Printf("%s : %s  \n", TitleCase(v), k)
+			log.Printf("%s : %s  \n", TitleCase(v), k)
 		}
 	}
 }
@@ -108,7 +108,7 @@ func ReadREADME(projectName string) ([]byte, error) {
 	pPath := filepath.Join(path, "README.md")
 	data, err := os.ReadFile(pPath)
 	if err != nil {
-		return nil, fmt.Errorf("Something went wrong while reading README for %s: %w", projectName, err)
+		return nil, fmt.Errorf("something went wrong while reading README for %s: %w", projectName, err)
 	}
 	return data, nil
 }

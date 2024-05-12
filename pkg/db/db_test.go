@@ -4,20 +4,30 @@ import (
 	"os"
 	"testing"
 
-	"github.com/stretchr/testify/require"
+	"github.com/stretchr/testify/assert"
 	"github.com/theredditbandit/pman/pkg/db"
 	bolt "go.etcd.io/bbolt"
 )
+
+const dbname = db.DBTestName
+const bucketName = "testBucket"
+const key = "testKey"
 
 func Test_GetDBLoc(t *testing.T) {
 	t.Run("Test getDBLoc", func(t *testing.T) {
 		expectedWords := []string{".local", "share", "pman"}
 
-		actualPath, err := db.GetDBLoc(db.DBTestName)
-		defer os.Remove(actualPath)
+		actualPath, err := db.GetDBLoc(dbname)
 
-		require.Equal(t, err, nil)
-		require.Contains(t, actualPath, expectedWords[0], expectedWords[1], expectedWords[2], db.DBTestName)
+		t.Cleanup(func() {
+			os.Remove(actualPath)
+		})
+
+		assert.Equal(t, err, nil)
+		assert.Contains(t, actualPath, expectedWords[0])
+		assert.Contains(t, actualPath, expectedWords[1])
+		assert.Contains(t, actualPath, expectedWords[2])
+		assert.Contains(t, actualPath, db.DBTestName)
 	})
 
 	t.Run("Test GetDBLoc with empty dbname", func(t *testing.T) {
@@ -26,9 +36,8 @@ func Test_GetDBLoc(t *testing.T) {
 
 		actualPath, err := db.GetDBLoc(dbname)
 
-		require.Error(t, err)
-		require.Equal(t, expectedErr, err)
-		require.Empty(t, actualPath)
+		assert.ErrorIs(t, err, expectedErr)
+		assert.Empty(t, actualPath)
 	})
 
 	t.Run("Test getDBLoc with panic", func(t *testing.T) {
@@ -38,21 +47,21 @@ func Test_GetDBLoc(t *testing.T) {
 
 func Test_GetRecord(t *testing.T) {
 	t.Run("Test GetRecord", func(t *testing.T) {
-		dbname := db.DBTestName
-		DBLoc, err := db.GetDBLoc(dbname)
-		require.NoError(t, err)
-		defer os.Remove(DBLoc)
+		actualPath, err := db.GetDBLoc(dbname)
+		assert.NoError(t, err)
+
+		t.Cleanup(func() {
+			os.Remove(actualPath)
+		})
 
 		expectedValue := "testValue"
-		key := "testKey"
-		bucketName := "testBucket"
 
 		err = db.WriteToDB(dbname, map[string]string{key: expectedValue}, bucketName)
-		require.NoError(t, err)
+		assert.NoError(t, err)
 
 		actualValue, err := db.GetRecord(dbname, key, bucketName)
-		require.NoError(t, err)
-		require.Equal(t, expectedValue, actualValue)
+		assert.NoError(t, err)
+		assert.Equal(t, expectedValue, actualValue)
 	})
 
 	t.Run("Test GetRecord with empty dbname", func(t *testing.T) {
@@ -63,49 +72,45 @@ func Test_GetRecord(t *testing.T) {
 
 		actualValue, err := db.GetRecord(dbname, key, bucketName)
 
-		require.Error(t, err)
-		require.Equal(t, expectedErr, err)
-		require.Empty(t, actualValue)
+		assert.ErrorIs(t, err, expectedErr)
+		assert.Empty(t, actualValue)
 	})
 
 	t.Run("Test GetRecord with key not found", func(t *testing.T) {
-		dbname := db.DBTestName
-		DBLoc, err := db.GetDBLoc(dbname)
-		require.NoError(t, err)
-		defer os.Remove(DBLoc)
-		key := "testKey"
-		bucketName := "testBucket"
 		expectedErr := db.ErrKeyNotFound
+		actualPath, err := db.GetDBLoc(dbname)
+		assert.NoError(t, err)
+
+		t.Cleanup(func() {
+			os.Remove(actualPath)
+		})
 
 		err = db.WriteToDB(dbname, map[string]string{}, bucketName)
-		require.NoError(t, err)
+		assert.NoError(t, err)
 
 		actualValue, err := db.GetRecord(dbname, key, bucketName)
 
-		require.Error(t, err)
-		require.Equal(t, expectedErr, err)
-		require.Empty(t, actualValue)
+		assert.ErrorIs(t, err, expectedErr)
+		assert.Empty(t, actualValue)
 	})
 
 	t.Run("Test GetRecord with bucket not found", func(t *testing.T) {
-		dbname := db.DBTestName
-		key := "testKey"
-		bucketName := "testBucket"
 		expectedErr := db.ErrBucketNotFound
 
 		actualValue, err := db.GetRecord(dbname, key, bucketName)
 
-		require.Error(t, err)
-		require.Equal(t, expectedErr, err)
-		require.Empty(t, actualValue)
+		assert.ErrorIs(t, err, expectedErr)
+		assert.Empty(t, actualValue)
 	})
 }
 func Test_WriteToDB(t *testing.T) {
 	t.Run("Test WriteToDB", func(t *testing.T) {
-		dbname := db.DBTestName
-		DBLoc, err := db.GetDBLoc(dbname)
-		require.NoError(t, err)
-		defer os.Remove(DBLoc)
+		actualPath, err := db.GetDBLoc(dbname)
+		assert.NoError(t, err)
+
+		t.Cleanup(func() {
+			os.Remove(actualPath)
+		})
 
 		data := map[string]string{
 			"key1": "value1",
@@ -115,32 +120,34 @@ func Test_WriteToDB(t *testing.T) {
 		bucketName := "testBucket"
 
 		err = db.WriteToDB(dbname, data, bucketName)
-		require.NoError(t, err)
+		assert.NoError(t, err)
 
 		// Verify that the data was written correctly
-		db, err := bolt.Open(DBLoc, 0o600, nil)
-		require.NoError(t, err)
+		db, err := bolt.Open(actualPath, 0o600, nil)
+		assert.NoError(t, err)
 		defer db.Close()
 
 		err = db.View(func(tx *bolt.Tx) error {
 			bucket := tx.Bucket([]byte(bucketName))
-			require.NotNil(t, bucket)
+			assert.NotNil(t, bucket)
 
 			for k, v := range data {
 				value := bucket.Get([]byte(k))
-				require.Equal(t, []byte(v), value)
+				assert.Equal(t, []byte(v), value)
 			}
 
 			return nil
 		})
-		require.NoError(t, err)
+		assert.NoError(t, err)
 	})
 
 	t.Run("Test WriteToDB with empty bucketname", func(t *testing.T) {
-		dbname := db.DBTestName
-		DBLoc, err := db.GetDBLoc(dbname)
-		require.NoError(t, err)
-		defer os.Remove(DBLoc)
+		actualPath, err := db.GetDBLoc(dbname)
+		assert.NoError(t, err)
+
+		t.Cleanup(func() {
+			os.Remove(actualPath)
+		})
 
 		data := map[string]string{
 			"key1": "value1",
@@ -151,25 +158,24 @@ func Test_WriteToDB(t *testing.T) {
 
 		err = db.WriteToDB(dbname, data, bucketName)
 
-		require.Error(t, err)
-		require.ErrorIs(t, err, db.ErrCreateBucket)
+		assert.ErrorIs(t, err, db.ErrCreateBucket)
 	})
 
 	t.Run("Test WriteToDB with empty map key", func(t *testing.T) {
-		dbname := db.DBTestName
-		DBLoc, err := db.GetDBLoc(dbname)
-		require.NoError(t, err)
-		defer os.Remove(DBLoc)
+		actualPath, err := db.GetDBLoc(dbname)
+		assert.NoError(t, err)
+
+		t.Cleanup(func() {
+			os.Remove(actualPath)
+		})
 
 		data := map[string]string{
 			"": "value1",
 		}
-		bucketName := "testBucket"
 
 		err = db.WriteToDB(dbname, data, bucketName)
 
-		require.Error(t, err)
-		require.ErrorIs(t, err, db.ErrWriteToDB)
+		assert.ErrorIs(t, err, db.ErrWriteToDB)
 	})
 
 	t.Run("Test WriteToDB with empty dbname value", func(t *testing.T) {
@@ -183,150 +189,150 @@ func Test_WriteToDB(t *testing.T) {
 
 		err := db.WriteToDB(dbname, data, bucketName)
 
-		require.Error(t, err)
-		require.ErrorIs(t, err, db.ErrOpenDB)
+		assert.ErrorIs(t, err, db.ErrOpenDB)
 	})
 }
 
 func Test_DeleteFromDb(t *testing.T) {
 	t.Run("Test DeleteFromDb", func(t *testing.T) {
-		dbname := db.DBTestName
-		DBLoc, err := db.GetDBLoc(dbname)
-		require.NoError(t, err)
-		defer os.Remove(DBLoc)
+
+		actualPath, err := db.GetDBLoc(dbname)
+		assert.NoError(t, err)
+
+		t.Cleanup(func() {
+			os.Remove(actualPath)
+		})
 
 		data := map[string]string{
 			"key1": "value1",
 			"key2": "value2",
 			"key3": "value3",
 		}
-		bucketName := "testBucket"
 		key := "key1"
 
 		err = db.WriteToDB(dbname, data, bucketName)
-		require.NoError(t, err)
+		assert.NoError(t, err)
 
 		err = db.DeleteFromDb(dbname, key, bucketName)
-		require.NoError(t, err)
+		assert.NoError(t, err)
 
 		// Verify that the key was deleted
-		db, err := bolt.Open(DBLoc, 0o600, nil)
-		require.NoError(t, err)
+		db, err := bolt.Open(actualPath, 0o600, nil)
+		assert.NoError(t, err)
 		defer db.Close()
 
 		err = db.View(func(tx *bolt.Tx) error {
 			bucket := tx.Bucket([]byte(bucketName))
-			require.NotNil(t, bucket)
+			assert.NotNil(t, bucket)
 
 			value := bucket.Get([]byte(key))
-			require.Nil(t, value)
+			assert.Nil(t, value)
 
 			return nil
 		})
-		require.NoError(t, err)
+		assert.NoError(t, err)
 	})
 
 	t.Run("Test DeleteFromDb with empty dbname", func(t *testing.T) {
 		dbname := ""
 		key := "key1"
-		bucketName := "testBucket"
 		expectedErr := db.ErrDBNameEmpty
 
 		err := db.DeleteFromDb(dbname, key, bucketName)
 
-		require.Error(t, err)
-		require.ErrorIs(t, err, expectedErr)
+		assert.ErrorIs(t, err, expectedErr)
 	})
 
 	t.Run("Test DeleteFromDb with key not found", func(t *testing.T) {
-		dbname := db.DBTestName
-		DBLoc, err := db.GetDBLoc(dbname)
-		require.NoError(t, err)
-		defer os.Remove(DBLoc)
+
+		actualPath, err := db.GetDBLoc(dbname)
+		assert.NoError(t, err)
+
+		t.Cleanup(func() {
+			os.Remove(actualPath)
+		})
 
 		data := map[string]string{
 			"key1": "value1",
 			"key2": "value2",
 			"key3": "value3",
 		}
-		bucketName := "testBucket"
 		key := "key4"
 
 		err = db.WriteToDB(dbname, data, bucketName)
-		require.NoError(t, err)
+		assert.NoError(t, err)
 
 		err = db.DeleteFromDb(dbname, key, bucketName)
 
-		require.NoError(t, err)
+		assert.NoError(t, err)
 	})
 
 	t.Run("Test DeleteFromDb with bucket not found", func(t *testing.T) {
-		dbname := db.DBTestName
+
 		key := "key1"
-		bucketName := "testBucket"
 		expectedErr := db.ErrBucketNotFound
 
 		err := db.DeleteFromDb(dbname, key, bucketName)
 
-		require.Error(t, err)
-		require.ErrorIs(t, err, expectedErr)
+		assert.ErrorIs(t, err, expectedErr)
 	})
 }
 
 func Test_ListAllRecords(t *testing.T) {
 	t.Run("Test ListAllRecords", func(t *testing.T) {
-		dbname := db.DBTestName
-		DBLoc, err := db.GetDBLoc(dbname)
-		require.NoError(t, err)
-		defer os.Remove(DBLoc)
+
+		actualPath, err := db.GetDBLoc(dbname)
+		assert.NoError(t, err)
+
+		t.Cleanup(func() {
+			os.Remove(actualPath)
+		})
 
 		data := map[string]string{
 			"key1": "value1",
 			"key2": "value2",
 			"key3": "value3",
 		}
-		bucketName := "testBucket"
 
 		err = db.WriteToDB(dbname, data, bucketName)
-		require.NoError(t, err)
+		assert.NoError(t, err)
 
 		records, err := db.GetAllRecords(dbname, bucketName)
 
-		require.NoError(t, err)
-		require.Equal(t, data, records)
+		assert.NoError(t, err)
+		assert.Equal(t, records, data)
 	})
 
 	t.Run("Test ListAllRecords with empty dbname", func(t *testing.T) {
 		dbname := ""
-		bucketName := "testBucket"
 		expectedErr := db.ErrDBNameEmpty
 		expectedValue := map[string]string{}
 
 		records, err := db.GetAllRecords(dbname, bucketName)
 
-		require.Error(t, err)
-		require.ErrorIs(t, err, expectedErr)
-		require.Equal(t, records, expectedValue)
+		assert.ErrorIs(t, err, expectedErr)
+		assert.Equal(t, records, expectedValue)
 	})
 
 	t.Run("Test ListAllRecords with bucket not found", func(t *testing.T) {
-		dbname := db.DBTestName
-		bucketName := "testBucket"
+
 		expectedErr := db.ErrBucketNotFound
 
 		records, err := db.GetAllRecords(dbname, bucketName)
 
-		require.Error(t, err)
-		require.ErrorIs(t, err, expectedErr)
-		require.Nil(t, records)
+		assert.ErrorIs(t, err, expectedErr)
+		assert.Nil(t, records)
 	})
 }
 func Test_UpdateRec(t *testing.T) {
 	t.Run("Test UpdateRec", func(t *testing.T) {
-		dbname := db.DBTestName
-		DBLoc, err := db.GetDBLoc(dbname)
-		require.NoError(t, err)
-		defer os.Remove(DBLoc)
+
+		actualPath, err := db.GetDBLoc(dbname)
+		assert.NoError(t, err)
+
+		t.Cleanup(func() {
+			os.Remove(actualPath)
+		})
 
 		data := map[string]string{
 			"key1": "value1",
@@ -338,89 +344,88 @@ func Test_UpdateRec(t *testing.T) {
 		newValue := "updatedValue"
 
 		err = db.WriteToDB(dbname, data, bucketName)
-		require.NoError(t, err)
+		assert.NoError(t, err)
 
 		err = db.UpdateRec(dbname, key, newValue, bucketName)
-		require.NoError(t, err)
+		assert.NoError(t, err)
 
 		// Verify that the value was updated
-		db, err := bolt.Open(DBLoc, 0o600, nil)
-		require.NoError(t, err)
+		db, err := bolt.Open(actualPath, 0o600, nil)
+		assert.NoError(t, err)
 		defer db.Close()
 
 		err = db.View(func(tx *bolt.Tx) error {
 			bucket := tx.Bucket([]byte(bucketName))
-			require.NotNil(t, bucket)
+			assert.NotNil(t, bucket)
 
 			value := bucket.Get([]byte(key))
-			require.Equal(t, []byte(newValue), value)
+			assert.Equal(t, []byte(newValue), value)
 			return nil
 		})
-		require.NoError(t, err)
+		assert.NoError(t, err)
 	})
 
 	t.Run("Test UpdateRec with empty dbname", func(t *testing.T) {
 		dbname := ""
 		key := "key1"
 		newValue := "updatedValue"
-		bucketName := "testBucket"
 		err := db.UpdateRec(dbname, key, newValue, bucketName)
 
-		require.Error(t, err)
-		require.Equal(t, db.ErrDBNameEmpty, err)
+		assert.ErrorIs(t, err, db.ErrDBNameEmpty)
 	})
 
 	t.Run("Test UpdateRec with key not found", func(t *testing.T) {
-		dbname := db.DBTestName
-		DBLoc, err := db.GetDBLoc(dbname)
-		require.NoError(t, err)
-		defer os.Remove(DBLoc)
+
+		actualPath, err := db.GetDBLoc(dbname)
+		assert.NoError(t, err)
+
+		t.Cleanup(func() {
+			os.Remove(actualPath)
+		})
 
 		data := map[string]string{
 			"key1": "value1",
 			"key2": "value2",
 			"key3": "value3",
 		}
-		bucketName := "testBucket"
 		key := "key4"
 		newValue := "updatedValue"
 
 		err = db.WriteToDB(dbname, data, bucketName)
-		require.NoError(t, err)
+		assert.NoError(t, err)
 
 		err = db.UpdateRec(dbname, key, newValue, bucketName)
 
-		require.Error(t, err)
-		require.Equal(t, db.ErrProjectNotFound, err)
+		assert.ErrorIs(t, err, db.ErrProjectNotFound)
 	})
 
 	t.Run("Test UpdateRec with bucket not found", func(t *testing.T) {
-		dbname := db.DBTestName
+
 		key := "key1"
 		newValue := "updatedValue"
-		bucketName := "testBucket"
 		expectedErr := db.ErrBucketNotFound
 
 		err := db.UpdateRec(dbname, key, newValue, bucketName)
 
-		require.Error(t, err)
-		require.Equal(t, expectedErr, err)
+		assert.ErrorIs(t, err, expectedErr)
 	})
 }
 
 func Test_DeleteDb(t *testing.T) {
 	t.Run("Test DeleteDb", func(t *testing.T) {
-		dbname := db.DBTestName
-		DBLoc, err := db.GetDBLoc(dbname)
-		require.NoError(t, err)
-		defer os.Remove(DBLoc)
+		actualPath, err := db.GetDBLoc(dbname)
+		assert.NoError(t, err)
+
+		t.Cleanup(func() {
+			os.Remove(actualPath)
+		})
 
 		err = db.DeleteDb(dbname)
-		require.NoError(t, err)
+		assert.NoError(t, err)
 
 		// Verify that the database file is deleted
-		_, err = os.Stat(DBLoc)
-		require.True(t, os.IsNotExist(err))
+		_, err = os.Stat(actualPath)
+		assert.True(t, os.IsNotExist(err))
 	})
 
 	t.Run("Test DeleteDb with empty dbname", func(t *testing.T) {
@@ -429,7 +434,6 @@ func Test_DeleteDb(t *testing.T) {
 
 		err := db.DeleteDb(dbname)
 
-		require.Error(t, err)
-		require.Equal(t, expectedErr, err)
+		assert.ErrorIs(t, err, expectedErr)
 	})
 }

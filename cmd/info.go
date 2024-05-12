@@ -10,14 +10,14 @@ import (
 )
 
 var (
-	ErrBadUsageInfoCmd error = errors.New("bad usage of info command")
+	ErrBadUsageInfoCmd = errors.New("bad usage of info command")
 )
 
 var infoCmd = &cobra.Command{
 	Use:     "info",
 	Short:   "The info command pretty prints the README.md file present at the root of the specified project.",
 	Aliases: []string{"ifo", "ifno", "ino"},
-	RunE: func(cmd *cobra.Command, args []string) error {
+	RunE: func(_ *cobra.Command, args []string) error {
 		if len(args) != 1 {
 			fmt.Println("Please provide a project name")
 			return ErrBadUsageInfoCmd
