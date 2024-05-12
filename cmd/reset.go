@@ -11,7 +11,7 @@ import (
 var resetCmd = &cobra.Command{
 	Use:   "reset",
 	Short: "Deletes the current indexed projects, run pman init to reindex the projects",
-	RunE: func(_ *cobra.Command, args []string) error {
+	RunE: func(_ *cobra.Command, _ []string) error {
 		err := db.DeleteDb(db.DBName)
 		if err != nil {
 			fmt.Println(err)
