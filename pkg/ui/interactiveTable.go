@@ -104,7 +104,7 @@ func RenderInteractiveTable(data map[string]string) error {
 
 	m := tableModel{t}
 	if _, err := tea.NewProgram(m).Run(); err != nil {
-		return fmt.Errorf("error running program: %s", err)
+		return fmt.Errorf("error running program: %w", err)
 	}
 	return nil
 }

@@ -29,12 +29,12 @@ var (
 
 // WriteToDB writes the data to the specified bucket in the database
 func WriteToDB(dbname string, data map[string]string, bucketName string) error {
-	DBLoc, err := GetDBLoc(dbname)
+	dbLoc, err := GetDBLoc(dbname)
 	if err != nil {
 		log.Printf("%v : %v \n", ErrOpenDB, err)
 		return errors.Join(ErrOpenDB, err)
 	}
-	db, _ := bolt.Open(DBLoc, 0o600, nil) // create the database if it doesn't exist then open it
+	db, _ := bolt.Open(dbLoc, 0o600, nil) // create the database if it doesn't exist then open it
 	defer db.Close()
 	err = db.Update(func(tx *bolt.Tx) error {
 		bucket, err := tx.CreateBucketIfNotExists([]byte(bucketName))
@@ -53,21 +53,19 @@ func WriteToDB(dbname string, data map[string]string, bucketName string) error {
 }
 
 func DeleteFromDb(dbname, key, bucketName string) error {
-	DBLoc, err := GetDBLoc(dbname)
+	dbLoc, err := GetDBLoc(dbname)
 	if err != nil {
 		log.Printf("%v : %v \n", ErrOpenDB, err)
 		return errors.Join(ErrOpenDB, err)
 	}
-	db, _ := bolt.Open(DBLoc, 0o600, nil) // create the database if it doesn't exist then open it
+	db, _ := bolt.Open(dbLoc, 0o600, nil) // create the database if it doesn't exist then open it
 	defer db.Close()
 	err = db.Update(func(tx *bolt.Tx) error {
 		bucket := tx.Bucket([]byte(bucketName))
 		if bucket == nil {
 			return ErrBucketNotFound
 		}
-		bucket.Delete([]byte(key))
-
-		return nil
+		return bucket.Delete([]byte(key))
 	})
 	return err
 }
@@ -95,12 +93,12 @@ func GetDBLoc(dbname string) (string, error) {
 // GetRecord returns the value of the key from the specified bucket, and error if it does not exist
 func GetRecord(dbname, key, bucketName string) (string, error) {
 	var rec string
-	DBLoc, err := GetDBLoc(dbname)
+	dbLoc, err := GetDBLoc(dbname)
 	if err != nil {
 		log.Printf("%v : %v \n", ErrOpenDB, err)
 		return "", err
 	}
-	db, _ := bolt.Open(DBLoc, 0o600, nil)
+	db, _ := bolt.Open(dbLoc, 0o600, nil)
 
 	defer db.Close()
 	err = db.View(func(tx *bolt.Tx) error {
@@ -123,13 +121,13 @@ func GetRecord(dbname, key, bucketName string) (string, error) {
 
 // GetAllRecords returns all the records from the specified bucket as a dictionary
 func GetAllRecords(dbname, bucketName string) (map[string]string, error) {
-	DBLoc, err := GetDBLoc(dbname)
+	dbLoc, err := GetDBLoc(dbname)
 	if err != nil {
 		log.Printf("%v : %v \n", ErrOpenDB, err)
 
 		return map[string]string{}, err
 	}
-	db, _ := bolt.Open(DBLoc, 0o600, nil)
+	db, _ := bolt.Open(dbLoc, 0o600, nil)
 	defer db.Close()
 	records := make(map[string]string)
 	err = db.View(func(tx *bolt.Tx) error {
@@ -155,12 +153,12 @@ func GetAllRecords(dbname, bucketName string) (map[string]string, error) {
 
 // UpdateRec updates the value of the key in the specified bucket, usually used to update the status of a project
 func UpdateRec(dbname, key, val, bucketName string) error {
-	DBLoc, err := GetDBLoc(dbname)
+	dbLoc, err := GetDBLoc(dbname)
 	if err != nil {
 		log.Print(err)
 		return err
 	}
-	db, _ := bolt.Open(DBLoc, 0o600, nil)
+	db, _ := bolt.Open(dbLoc, 0o600, nil)
 
 	defer db.Close()
 	err = db.Update(func(tx *bolt.Tx) error {
@@ -179,10 +177,9 @@ func UpdateRec(dbname, key, val, bucketName string) error {
 }
 
 func DeleteDb(dbname string) error {
-	DBLoc, err := GetDBLoc(dbname)
+	dbLoc, err := GetDBLoc(dbname)
 	if err != nil {
 		return err
 	}
-	os.Remove(DBLoc)
-	return nil
+	return os.Remove(dbLoc)
 }

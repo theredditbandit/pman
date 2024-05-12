@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"github.com/theredditbandit/pman/pkg/db"
 	bolt "go.etcd.io/bbolt"
 )
@@ -23,7 +24,7 @@ func Test_GetDBLoc(t *testing.T) {
 			os.Remove(actualPath)
 		})
 
-		assert.Equal(t, err, nil)
+		assert.NoError(t, err)
 		assert.Contains(t, actualPath, expectedWords[0])
 		assert.Contains(t, actualPath, expectedWords[1])
 		assert.Contains(t, actualPath, expectedWords[2])
@@ -38,10 +39,6 @@ func Test_GetDBLoc(t *testing.T) {
 
 		assert.ErrorIs(t, err, expectedErr)
 		assert.Empty(t, actualPath)
-	})
-
-	t.Run("Test getDBLoc with panic", func(t *testing.T) {
-
 	})
 }
 
@@ -72,7 +69,7 @@ func Test_GetRecord(t *testing.T) {
 
 		actualValue, err := db.GetRecord(dbname, key, bucketName)
 
-		assert.ErrorIs(t, err, expectedErr)
+		require.ErrorIs(t, err, expectedErr)
 		assert.Empty(t, actualValue)
 	})
 
@@ -90,7 +87,7 @@ func Test_GetRecord(t *testing.T) {
 
 		actualValue, err := db.GetRecord(dbname, key, bucketName)
 
-		assert.ErrorIs(t, err, expectedErr)
+		require.ErrorIs(t, err, expectedErr)
 		assert.Empty(t, actualValue)
 	})
 
@@ -99,7 +96,7 @@ func Test_GetRecord(t *testing.T) {
 
 		actualValue, err := db.GetRecord(dbname, key, bucketName)
 
-		assert.ErrorIs(t, err, expectedErr)
+		require.ErrorIs(t, err, expectedErr)
 		assert.Empty(t, actualValue)
 	})
 }
@@ -158,7 +155,7 @@ func Test_WriteToDB(t *testing.T) {
 
 		err = db.WriteToDB(dbname, data, bucketName)
 
-		assert.ErrorIs(t, err, db.ErrCreateBucket)
+		require.ErrorIs(t, err, db.ErrCreateBucket)
 	})
 
 	t.Run("Test WriteToDB with empty map key", func(t *testing.T) {
@@ -175,7 +172,7 @@ func Test_WriteToDB(t *testing.T) {
 
 		err = db.WriteToDB(dbname, data, bucketName)
 
-		assert.ErrorIs(t, err, db.ErrWriteToDB)
+		require.ErrorIs(t, err, db.ErrWriteToDB)
 	})
 
 	t.Run("Test WriteToDB with empty dbname value", func(t *testing.T) {
@@ -189,7 +186,7 @@ func Test_WriteToDB(t *testing.T) {
 
 		err := db.WriteToDB(dbname, data, bucketName)
 
-		assert.ErrorIs(t, err, db.ErrOpenDB)
+		require.ErrorIs(t, err, db.ErrOpenDB)
 	})
 }
 
@@ -240,7 +237,7 @@ func Test_DeleteFromDb(t *testing.T) {
 
 		err := db.DeleteFromDb(dbname, key, bucketName)
 
-		assert.ErrorIs(t, err, expectedErr)
+		require.ErrorIs(t, err, expectedErr)
 	})
 
 	t.Run("Test DeleteFromDb with key not found", func(t *testing.T) {
@@ -274,7 +271,7 @@ func Test_DeleteFromDb(t *testing.T) {
 
 		err := db.DeleteFromDb(dbname, key, bucketName)
 
-		assert.ErrorIs(t, err, expectedErr)
+		require.ErrorIs(t, err, expectedErr)
 	})
 }
 
@@ -300,7 +297,7 @@ func Test_ListAllRecords(t *testing.T) {
 		records, err := db.GetAllRecords(dbname, bucketName)
 
 		assert.NoError(t, err)
-		assert.Equal(t, records, data)
+		assert.Equal(t,data, records)
 	})
 
 	t.Run("Test ListAllRecords with empty dbname", func(t *testing.T) {
@@ -310,17 +307,16 @@ func Test_ListAllRecords(t *testing.T) {
 
 		records, err := db.GetAllRecords(dbname, bucketName)
 
-		assert.ErrorIs(t, err, expectedErr)
-		assert.Equal(t, records, expectedValue)
+		require.ErrorIs(t, err, expectedErr)
+		assert.Equal(t, expectedValue, records)
 	})
 
 	t.Run("Test ListAllRecords with bucket not found", func(t *testing.T) {
-
 		expectedErr := db.ErrBucketNotFound
 
 		records, err := db.GetAllRecords(dbname, bucketName)
 
-		assert.ErrorIs(t, err, expectedErr)
+		require.ErrorIs(t, err, expectedErr)
 		assert.Nil(t, records)
 	})
 }
@@ -371,7 +367,7 @@ func Test_UpdateRec(t *testing.T) {
 		newValue := "updatedValue"
 		err := db.UpdateRec(dbname, key, newValue, bucketName)
 
-		assert.ErrorIs(t, err, db.ErrDBNameEmpty)
+		require.ErrorIs(t, err, db.ErrDBNameEmpty)
 	})
 
 	t.Run("Test UpdateRec with key not found", func(t *testing.T) {
@@ -396,7 +392,7 @@ func Test_UpdateRec(t *testing.T) {
 
 		err = db.UpdateRec(dbname, key, newValue, bucketName)
 
-		assert.ErrorIs(t, err, db.ErrProjectNotFound)
+		require.ErrorIs(t, err, db.ErrProjectNotFound)
 	})
 
 	t.Run("Test UpdateRec with bucket not found", func(t *testing.T) {
@@ -407,7 +403,7 @@ func Test_UpdateRec(t *testing.T) {
 
 		err := db.UpdateRec(dbname, key, newValue, bucketName)
 
-		assert.ErrorIs(t, err, expectedErr)
+		require.ErrorIs(t, err, expectedErr)
 	})
 }
 
@@ -434,6 +430,6 @@ func Test_DeleteDb(t *testing.T) {
 
 		err := db.DeleteDb(dbname)
 
-		assert.ErrorIs(t, err, expectedErr)
+		require.ErrorIs(t, err, expectedErr)
 	})
 }

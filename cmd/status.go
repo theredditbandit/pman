@@ -11,7 +11,7 @@ import (
 )
 
 var (
-	ErrBadUsageStatusCmd error = errors.New("bad usage of status command")
+	ErrBadUsageStatusCmd = errors.New("bad usage of status command")
 )
 
 // statusCmd represents the status command

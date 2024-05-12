@@ -16,7 +16,7 @@ var lsCmd = &cobra.Command{
 	Long: `List all indexed projects along with their status
     Usage : pman ls
     `,
-	RunE: func(cmd *cobra.Command, args []string) error {
+	RunE: func(cmd *cobra.Command, _ []string) error {
 		filterFlag, _ := cmd.Flags().GetString("f")
 		oldUi, _ := cmd.Flags().GetBool("o")
 		data, err := db.GetAllRecords(db.DBName, StatusBucket)
