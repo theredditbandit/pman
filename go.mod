@@ -10,7 +10,7 @@ require (
 	github.com/spf13/cobra v1.8.0
 	github.com/thoas/go-funk v0.9.3
 	go.etcd.io/bbolt v1.3.10
-	golang.org/x/text v0.14.0
+	golang.org/x/text v0.15.0
 )
 
 require (
