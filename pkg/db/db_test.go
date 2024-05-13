@@ -6,8 +6,9 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/theredditbandit/pman/pkg/db"
 	bolt "go.etcd.io/bbolt"
+
+	"github.com/theredditbandit/pman/pkg/db"
 )
 
 const dbname = db.DBTestName

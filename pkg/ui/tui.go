@@ -25,8 +25,8 @@ var (
 )
 
 type item struct {
-	name       string
-	status     string
+	name   string
+	status string
 }
 
 func (i item) Title() string       { return i.name }
