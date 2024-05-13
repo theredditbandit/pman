@@ -27,7 +27,6 @@ var (
 type item struct {
 	name       string
 	status     string
-	// lastEdited string
 }
 
 func (i item) Title() string       { return i.name }
@@ -92,7 +91,10 @@ func newModel() (model, error) {
 		}
 	})
 
-	formattedData, _ := d.([]item)
+	formattedData, ok := d.([]item)
+	if !ok {
+		return model{}, fmt.Errorf("something went wrong while creating a list of items")
+	}
 	items := make([]list.Item, len(data))
 	for i := 0; i < len(data); i++ {
 		items[i] = formattedData[i]

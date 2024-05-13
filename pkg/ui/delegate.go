@@ -10,23 +10,19 @@ import (
 
 func newItemDelegate(keys *delegateKeyMap) list.DefaultDelegate {
 	d := list.NewDefaultDelegate()
-
 	d.UpdateFunc = func(msg tea.Msg, m *list.Model) tea.Cmd {
-		var title string
-
-		if i, ok := m.SelectedItem().(item); ok {
-			title = i.Title()
-		} else {
+		i, ok := m.SelectedItem().(item)
+		if !ok {
 			return nil
 		}
-
-		switch msg := msg.(type) {
-		case tea.KeyMsg:
+		title := i.Title()
+		if msg, ok := msg.(tea.KeyMsg); ok {
 			switch {
 			case key.Matches(msg, keys.choose):
-				p.LaunchRenderer(title)
-				return tea.Quit // TODO : change this to return to the list
-
+				err := p.LaunchRenderer(title)
+				if err == nil {
+					return tea.Quit // TODO : change this to return to the list
+				}
 			case key.Matches(msg, keys.remove):
 				index := m.Index()
 				m.RemoveItem(index)
@@ -36,7 +32,6 @@ func newItemDelegate(keys *delegateKeyMap) list.DefaultDelegate {
 				return m.NewStatusMessage(statusMessageStyle("Deleted " + title))
 			}
 		}
-
 		return nil
 	}
 

@@ -15,30 +15,30 @@ import (
 
 // RenderTable: renders the given data as a table
 func RenderTable(data map[string]string) error {
-	var TableData [][]string
+	var tableData [][]string
 	for p, status := range data {
 		alias, err := db.GetRecord(db.DBName, p, pkg.ProjectAliasBucket)
 		lastEdited := utils.GetLastModifiedTime(p)
 		if err == nil {
 			pname := fmt.Sprintf("%s (%s)", p, alias)
 			row := []string{utils.TitleCase(status), pname, lastEdited} // Status | projectName (alias) | lastEdited
-			TableData = append(TableData, row)
+			tableData = append(tableData, row)
 		} else {
 			row := []string{utils.TitleCase(status), p, lastEdited} // Status | projectName | lastEdited
-			TableData = append(TableData, row)
+			tableData = append(tableData, row)
 		}
 	}
-	if len(TableData) == 0 {
+	if len(tableData) == 0 {
 		fmt.Printf("No projects found in the database\n\n")
 		fmt.Printf("Add projects to the database using \n\n")
 		fmt.Println("pman init .")
 		fmt.Println("or")
 		fmt.Println("pman add <projectDir>")
-		return fmt.Errorf("no database initialised")
+		return fmt.Errorf("no database initialized")
 	}
-	sort.Slice(TableData, func(i, j int) bool {
-		valI := TableData[i][1]
-		valJ := TableData[j][1]
+	sort.Slice(tableData, func(i, j int) bool {
+		valI := tableData[i][1]
+		valJ := tableData[j][1]
 		return valI < valJ
 	})
 	re := lipgloss.NewRenderer(os.Stdout)
@@ -62,12 +62,12 @@ func RenderTable(data map[string]string) error {
 		BorderStyle(re.NewStyle().Foreground(lipgloss.Color("238"))).
 		Headers(headers...).
 		Width(90).
-		Rows(TableData...).
+		Rows(tableData...).
 		StyleFunc(func(row, _ int) lipgloss.Style {
 			if row == 0 {
 				return headerStyle
 			}
-			color, ok := statusColors[fmt.Sprint(TableData[row-1][0])]
+			color, ok := statusColors[fmt.Sprint(tableData[row-1][0])]
 			if ok {
 				return baseStyle.Copy().Foreground(color)
 			}
