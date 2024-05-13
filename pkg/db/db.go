@@ -97,7 +97,7 @@ func GetRecord(key string, bucketName string) (string, error) {
 		}
 		v := bucket.Get([]byte(key))
 		if v == nil {
-			return fmt.Errorf("Key not found in db\n")
+			return fmt.Errorf("key not found in db")
 		}
 		rec = string(v)
 		return nil
@@ -123,7 +123,7 @@ func GetAllRecords(bucketName string) (map[string]string, error) {
 	err = db.View(func(tx *bolt.Tx) error {
 		bucket := tx.Bucket([]byte(bucketName))
 		if bucket == nil {
-			return fmt.Errorf("Database not found. \nThis could be because no project dir has been initialized yet.")
+			return fmt.Errorf("database not found. \nThis could be because no project dir has been initialized yet")
 		}
 		err := bucket.ForEach(func(k, v []byte) error {
 			records[string(k)] = string(v)
