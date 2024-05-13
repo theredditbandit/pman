@@ -36,5 +36,5 @@ jobs:
       - name: Run golangci-lint
         uses: golangci/golangci-lint-action@v6
         with:
-          only-new-issues: true # this should be removed at some point, but there are too many issues to address
+          only-new-issues: false 
           version: latest
