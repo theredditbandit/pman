@@ -18,7 +18,7 @@ var lsCmd = &cobra.Command{
     `,
 	RunE: func(cmd *cobra.Command, _ []string) error {
 		filterFlag, _ := cmd.Flags().GetString("f")
-		oldUi, _ := cmd.Flags().GetBool("o")
+		oldUI, _ := cmd.Flags().GetBool("o")
 		data, err := db.GetAllRecords(StatusBucket)
 		if err != nil {
 			return err
@@ -27,7 +27,7 @@ var lsCmd = &cobra.Command{
 			fmt.Println("Filtering by status : ", filterFlag)
 			data = utils.FilterByStatus(data, filterFlag)
 		}
-		if oldUi {
+		if oldUI {
 			return ui.RenderTable(data)
 		}
 		return ui.RenderInteractiveTable(data)

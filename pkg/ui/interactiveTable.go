@@ -22,12 +22,11 @@ type tableModel struct {
 	table table.Model
 }
 
-func (m tableModel) Init() tea.Cmd { return nil }
+func (tableModel) Init() tea.Cmd { return nil }
 
 func (m tableModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
-	switch msg := msg.(type) {
-	case tea.KeyMsg:
+	if msg, ok := msg.(tea.KeyMsg); ok {
 		switch msg.String() {
 		case "esc":
 			if m.table.Focused() {
@@ -39,7 +38,10 @@ func (m tableModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, tea.Quit
 		case "enter":
 			project := m.table.SelectedRow()[1]
-			p.LaunchRenderer(project)
+			err := p.LaunchRenderer(project)
+			if err != nil {
+				return m, tea.Quit
+			}
 		}
 	}
 	m.table, cmd = m.table.Update(msg)
@@ -57,15 +59,15 @@ func RenderInteractiveTable(data map[string]string) error {
 		{Title: "Last Edited", Width: 20},
 	}
 	var rows []table.Row
-	for p, status := range data {
-		alias, err := db.GetRecord(p, pkg.ProjectAliasBucket)
-		lastEdited := utils.GetLastModifiedTime(p)
+	for proj, status := range data {
+		alias, err := db.GetRecord(proj, pkg.ProjectAliasBucket)
+		lastEdited := utils.GetLastModifiedTime(proj)
 		if err == nil {
-			pname := fmt.Sprintf("%s (%s)", p, alias)
+			pname := fmt.Sprintf("%s (%s)", proj, alias)
 			row := []string{utils.TitleCase(status), pname, lastEdited} // Status | projectName (alias) | lastEdited
 			rows = append(rows, row)
 		} else {
-			row := []string{utils.TitleCase(status), p, lastEdited} // Status | projectName | lastEdited
+			row := []string{utils.TitleCase(status), proj, lastEdited} // Status | projectName | lastEdited
 			rows = append(rows, row)
 		}
 	}
@@ -104,7 +106,7 @@ func RenderInteractiveTable(data map[string]string) error {
 
 	m := tableModel{t}
 	if _, err := tea.NewProgram(m).Run(); err != nil {
-		return fmt.Errorf("Error running program: %s", err)
+		return fmt.Errorf("error running program: %w", err)
 	}
 	return nil
 }
