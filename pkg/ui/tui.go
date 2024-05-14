@@ -79,7 +79,7 @@ func newModel() (model, error) {
 		delegateKeys = newDelegateKeyMap()
 	)
 
-	data, err := db.GetAllRecords(pkg.StatusBucket)
+	data, err := db.GetAllRecords(db.DBName, pkg.StatusBucket)
 	if err != nil {
 		return model{}, err
 	}
@@ -185,7 +185,7 @@ func Tui() error {
 	}
 
 	if _, err := tea.NewProgram(model, tea.WithAltScreen()).Run(); err != nil {
-		return fmt.Errorf("Error running program: %w", err)
+		return fmt.Errorf("error running program: %w", err)
 	}
 
 	return nil

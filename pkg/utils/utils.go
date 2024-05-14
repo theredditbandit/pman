@@ -1,7 +1,9 @@
 package utils
 
 import (
+	"errors"
 	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 	"time"
@@ -12,6 +14,11 @@ import (
 
 	"github.com/theredditbandit/pman/pkg"
 	"github.com/theredditbandit/pman/pkg/db"
+)
+
+var (
+	ErrBeautifyMD = errors.New("error beautifying markdown")
+	ErrReadREADME = errors.New("error reading README")
 )
 
 func TitleCase(s string) string {
@@ -32,11 +39,11 @@ func FilterByStatus(data map[string]string, status string) map[string]string {
 // Deprecated: Use ui.RenderTable instead
 func PrintData(data map[string]string) {
 	for k, v := range data {
-		alias, err := db.GetRecord(k, pkg.ProjectAliasBucket)
+		alias, err := db.GetRecord(db.DBName, k, pkg.ProjectAliasBucket)
 		if err == nil {
-			fmt.Printf("%s : %s (%s) \n", TitleCase(v), k, alias)
+			log.Printf("%s : %s (%s) \n", TitleCase(v), k, alias)
 		} else {
-			fmt.Printf("%s : %s  \n", TitleCase(v), k)
+			log.Printf("%s : %s  \n", TitleCase(v), k)
 		}
 	}
 }
@@ -46,7 +53,7 @@ func GetLastModifiedTime(pname string) string {
 	var lastModFile string
 	today := time.Now()
 	_ = lastModFile
-	pPath, err := db.GetRecord(pname, pkg.ProjectPaths)
+	pPath, err := db.GetRecord(db.DBName, pname, pkg.ProjectPaths)
 	if err != nil {
 		return "Something went wrong"
 	}
@@ -80,29 +87,28 @@ func BeautifyMD(data []byte) (string, error) {
 		glamour.WithAutoStyle(),
 	)
 	if err != nil {
-		return "", fmt.Errorf("something went wrong while creating renderer: %w", err)
+		log.Print("something went wrong while creating renderer: ", err)
+		return "", errors.Join(ErrBeautifyMD, err)
 	}
-	out, err := r.Render(string(data))
-	if err != nil {
-		return "", err
-	}
+	out, _ := r.Render(string(data))
 	return out, nil
 }
 
 // ReadREADME: returns the byte array of README.md of a project
 func ReadREADME(projectName string) ([]byte, error) {
-	actualName, err := db.GetRecord(projectName, pkg.ProjectAliasBucket)
+	actualName, err := db.GetRecord(db.DBName, projectName, pkg.ProjectAliasBucket)
 	if err == nil {
 		projectName = actualName
 	}
-	path, err := db.GetRecord(projectName, pkg.ProjectPaths)
+	path, err := db.GetRecord(db.DBName, projectName, pkg.ProjectPaths)
 	if err != nil {
-		return nil, fmt.Errorf("project: %v not a valid project", projectName)
+		log.Printf("project: %v not a valid project\n", projectName)
+		return nil, errors.Join(ErrReadREADME, err)
 	}
 	pPath := filepath.Join(path, "README.md")
 	data, err := os.ReadFile(pPath)
 	if err != nil {
-		return nil, fmt.Errorf("Something went wrong while reading README for %s: %w", projectName, err)
+		return nil, fmt.Errorf("something went wrong while reading README for %s: %w", projectName, err)
 	}
 	return data, nil
 }

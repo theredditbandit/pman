@@ -9,6 +9,11 @@ import (
 	"github.com/theredditbandit/pman/pkg/db"
 )
 
+var (
+	ErrFlagNotImplemented = errors.New("flag not implemented yet")
+	ErrBadUsageSetCmd     = errors.New("bad usage of set command")
+)
+
 var setCmd = &cobra.Command{
 	Use:   "set",
 	Short: "Set the status of a project",
@@ -22,26 +27,27 @@ var setCmd = &cobra.Command{
 		interactiveFlag, _ := cmd.Flags().GetBool("i") // TODO: Implement this
 		if interactiveFlag {
 			cmd.SilenceUsage = true
-			return errors.New("Not implemented yet")
+			return ErrFlagNotImplemented
 		}
 		if len(args) != 2 {
-			return errors.New("Please provide a directory name")
+			fmt.Println("Please provide a directory name")
+			return ErrBadUsageSetCmd
 		}
 		var pname string
 		alias := args[0]
 		status := args[1]
-		project, err := db.GetRecord(alias, ProjectAliasBucket)
+		project, err := db.GetRecord(db.DBName, alias, ProjectAliasBucket)
 		if err == nil {
 			pname = project
 		} else {
 			pname = alias
 		}
-		err = db.UpdateRec(pname, status, StatusBucket)
+		err = db.UpdateRec(db.DBName, pname, status, StatusBucket)
 		if err != nil {
-			return fmt.Errorf("Error updating record : %w", err)
+			fmt.Println("Error updating record : ", err)
+			return err
 		}
 		fmt.Printf("Project %s set to status %s\n", pname, status)
-
 		return nil
 	},
 }

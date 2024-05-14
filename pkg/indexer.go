@@ -2,7 +2,7 @@ package pkg
 
 import (
 	"errors"
-	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 
@@ -15,39 +15,51 @@ const (
 	ProjectAliasBucket = "projectAliases"
 )
 
+var (
+	ErrDirname    = errors.New("error providing a directory name")
+	ErrDirInvalid = errors.New("error providing a valid directory name")
+	ErrIsNotDir   = errors.New("error providing a file instead of a directory")
+	ErrIndexDir   = errors.New("error indexing directory")
+)
+
 // InitDirs indexes a directory for project directories and writes the data to the DB
 func InitDirs(args []string) error {
 	// the file which identifies a project directory
 	projIdentifier := "README.md"
 	if len(args) != 1 {
-		return errors.New("Please provide a directory name")
+		log.Print("Please provide a directory name")
+		return ErrDirname
 	}
 	dirname := args[0]
 	if stat, err := os.Stat(dirname); os.IsNotExist(err) {
-		return fmt.Errorf("%s is not a directory", dirname)
+		log.Printf("%s is not a directory \n", dirname)
+		return ErrDirInvalid
 	} else if !stat.IsDir() {
-		return fmt.Errorf("%s is a file and not a directory", dirname)
+		log.Printf("%s is a file and not a directory \n", dirname)
+		return ErrIsNotDir
 	}
 	projDirs, err := indexDir(dirname, projIdentifier)
 	if err != nil {
-		return err
+		log.Print(err)
+		return ErrIndexDir
 	}
-	fmt.Printf("Indexed %d project directories . . .\n", len(projDirs))
+	log.Printf("Indexed %d project directories . . .\n", len(projDirs))
 	projectStatusMap := make(map[string]string)
 	projectPathMap := make(map[string]string)
 	for k, v := range projDirs { // k : full project path, v : project status ,
 		projectStatusMap[filepath.Base(k)] = v // filepath.Base(k) : project name
 		projectPathMap[filepath.Base(k)] = k
 	}
-	err = db.WriteToDB(projectStatusMap, StatusBucket)
+	err = db.WriteToDB(db.DBName, projectStatusMap, StatusBucket)
 	if err != nil {
+		log.Print(err)
 		return err
 	}
-	err = db.WriteToDB(projectPathMap, ProjectPaths)
+	err = db.WriteToDB(db.DBName, projectPathMap, ProjectPaths)
 	if err != nil {
+		log.Print(err)
 		return err
 	}
-
 	return nil
 }
 

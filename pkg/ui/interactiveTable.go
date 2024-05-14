@@ -60,7 +60,7 @@ func RenderInteractiveTable(data map[string]string) error {
 	}
 	var rows []table.Row
 	for proj, status := range data {
-		alias, err := db.GetRecord(proj, pkg.ProjectAliasBucket)
+		alias, err := db.GetRecord(db.DBName, proj, pkg.ProjectAliasBucket)
 		lastEdited := utils.GetLastModifiedTime(proj)
 		if err == nil {
 			pname := fmt.Sprintf("%s (%s)", proj, alias)
