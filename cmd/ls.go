@@ -18,7 +18,7 @@ var lsCmd = &cobra.Command{
     `,
 	RunE: func(cmd *cobra.Command, _ []string) error {
 		filterFlag, _ := cmd.Flags().GetString("f")
-		oldUI, _ := cmd.Flags().GetBool("o")
+		oldUI, _ := cmd.Flags().GetBool("c")
 		data, err := db.GetAllRecords(db.DBName, StatusBucket)
 		if err != nil {
 			return err
@@ -37,5 +37,5 @@ var lsCmd = &cobra.Command{
 func init() {
 	rootCmd.AddCommand(lsCmd)
 	lsCmd.Flags().String("f", "", "Filter projects by status. Usage : pman ls --f <status>")
-	lsCmd.Flags().Bool("o", false, "list projects using the old ui. Usage : pman ls --o")
+	lsCmd.Flags().Bool("c", false, "list projects using the colorful table. Usage : pman ls --c")
 }

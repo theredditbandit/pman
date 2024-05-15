@@ -3,6 +3,7 @@ package ui
 import (
 	"fmt"
 	"sort"
+	"strings"
 
 	"github.com/charmbracelet/bubbles/table"
 	tea "github.com/charmbracelet/bubbletea"
@@ -10,7 +11,7 @@ import (
 
 	"github.com/theredditbandit/pman/pkg"
 	"github.com/theredditbandit/pman/pkg/db"
-	p "github.com/theredditbandit/pman/pkg/ui/pager"
+	pgr "github.com/theredditbandit/pman/pkg/ui/pager"
 	"github.com/theredditbandit/pman/pkg/utils"
 )
 
@@ -38,7 +39,11 @@ func (m tableModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, tea.Quit
 		case "enter":
 			project := m.table.SelectedRow()[1]
-			err := p.LaunchRenderer(project)
+			if strings.Contains(project, ")") { // project is of the form a-long-project-name (alias)
+				projectAliasArr := strings.Split(project, " ")
+				project = projectAliasArr[0]
+			}
+			err := pgr.LaunchRenderer(project)
 			if err != nil {
 				return m, tea.Quit
 			}

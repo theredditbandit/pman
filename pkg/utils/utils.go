@@ -96,14 +96,19 @@ func BeautifyMD(data []byte) (string, error) {
 
 // ReadREADME: returns the byte array of README.md of a project
 func ReadREADME(projectName string) ([]byte, error) {
-	actualName, err := db.GetRecord(db.DBName, projectName, pkg.ProjectAliasBucket)
-	if err == nil {
-		projectName = actualName
-	}
 	path, err := db.GetRecord(db.DBName, projectName, pkg.ProjectPaths)
 	if err != nil {
-		log.Printf("project: %v not a valid project\n", projectName)
-		return nil, errors.Join(ErrReadREADME, err)
+		actualName, err := db.GetRecord(db.DBName, projectName, pkg.ProjectAliasBucket)
+		if err != nil {
+			log.Printf("project: %v not a valid project\n", projectName)
+			return nil, errors.Join(ErrReadREADME, err)
+		}
+		projectName = actualName
+		path, err = db.GetRecord(db.DBName, projectName, pkg.ProjectPaths)
+		if err != nil {
+			log.Printf("project: %v not a valid project\n", projectName)
+			return nil, errors.Join(ErrReadREADME, err)
+		}
 	}
 	pPath := filepath.Join(path, "README.md")
 	data, err := os.ReadFile(pPath)
