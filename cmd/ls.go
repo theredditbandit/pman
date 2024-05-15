@@ -18,7 +18,7 @@ var lsCmd = &cobra.Command{
     `,
 	RunE: func(cmd *cobra.Command, _ []string) error {
 		filterFlag, _ := cmd.Flags().GetString("f")
-		oldUI, _ := cmd.Flags().GetBool("o")
+		oldUI, _ := cmd.Flags().GetBool("c")
 		data, err := db.GetAllRecords(db.DBName, StatusBucket)
 		if err != nil {
 			return err
