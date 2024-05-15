@@ -101,6 +101,11 @@ func ReadREADME(dbname, projectName string) ([]byte, error) {
 		}
 	}
 	pPath := filepath.Join(path, "README.md")
+	_, err = os.Stat(pPath)
+	if os.IsNotExist(err) {
+		msg := fmt.Sprintf("# README does not exist for %s", projectName)
+		return []byte(msg), nil
+	}
 	data, err := os.ReadFile(pPath)
 	if err != nil {
 		return nil, errors.Join(ErrReadREADME, fmt.Errorf("something went wrong while reading README for %s: %w", projectName, err))
