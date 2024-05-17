@@ -8,6 +8,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 
+	"github.com/theredditbandit/pman/pkg/db"
 	"github.com/theredditbandit/pman/pkg/utils"
 )
 
@@ -101,7 +102,7 @@ func (m model) footerView() string {
 }
 
 func LaunchRenderer(file string) error {
-	content, err := utils.ReadREADME(file)
+	content, err := utils.ReadREADME(db.DBName, file)
 	if err != nil {
 		return err
 	}

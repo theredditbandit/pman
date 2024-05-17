@@ -11,9 +11,11 @@ import (
 	"github.com/theredditbandit/pman/pkg/db"
 )
 
-const dbname = db.DBTestName
-const bucketName = "testBucket"
-const key = "testKey"
+const (
+	dbname     = db.DBTestName
+	bucketName = "testBucket"
+	key        = "testKey"
+)
 
 func Test_GetDBLoc(t *testing.T) {
 	t.Run("Test getDBLoc", func(t *testing.T) {

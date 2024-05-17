@@ -6,6 +6,7 @@ import (
 
 	"github.com/spf13/cobra"
 
+	"github.com/theredditbandit/pman/pkg/db"
 	"github.com/theredditbandit/pman/pkg/utils"
 )
 
@@ -23,7 +24,7 @@ var infoCmd = &cobra.Command{
 			return ErrBadUsageInfoCmd
 		}
 		projectName := args[0]
-		infoData, err := utils.ReadREADME(projectName)
+		infoData, err := utils.ReadREADME(db.DBName, projectName)
 		if err != nil {
 			return err
 		}
