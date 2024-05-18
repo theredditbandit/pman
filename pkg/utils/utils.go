@@ -26,11 +26,13 @@ func TitleCase(s string) string {
 	return c.String(s)
 }
 
-func FilterByStatus(data map[string]string, status string) map[string]string {
+func FilterByStatuses(data map[string]string, status []string) map[string]string {
 	filteredData := make(map[string]string)
 	for k, v := range data {
-		if v == status {
-			filteredData[k] = v
+		for _, s := range status {
+			if v == s {
+				filteredData[k] = v
+			}
 		}
 	}
 	return filteredData

@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/spf13/cobra"
 
@@ -25,7 +26,7 @@ var lsCmd = &cobra.Command{
 		}
 		if filterFlag != "" {
 			fmt.Println("Filtering by status : ", filterFlag)
-			data = utils.FilterByStatus(data, filterFlag)
+			data = utils.FilterByStatuses(data, strings.Split(filterFlag, ","))
 		}
 		if oldUI {
 			return ui.RenderTable(data)
@@ -36,6 +37,6 @@ var lsCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(lsCmd)
-	lsCmd.Flags().String("f", "", "Filter projects by status. Usage : pman ls --f <status>")
+	lsCmd.Flags().String("f", "", "Filter projects by status. Usage : pman ls --f <status1[,status2]>")
 	lsCmd.Flags().Bool("c", false, "list projects using the colorful table. Usage : pman ls --c")
 }
