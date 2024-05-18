@@ -13,6 +13,7 @@ const (
 	StatusBucket       = "projects"
 	ProjectPaths       = "projectPaths"
 	ProjectAliasBucket = "projectAliases"
+	LastUpdatedBucket  = "lastUpdated"
 )
 
 var (

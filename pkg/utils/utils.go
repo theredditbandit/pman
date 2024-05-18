@@ -42,9 +42,7 @@ func FilterByStatuses(data map[string]string, status []string) map[string]string
 
 func GetLastModifiedTime(dbname, pname string) string {
 	var lastModTime time.Time
-	var lastModFile string
 	today := time.Now()
-	_ = lastModFile
 	pPath, err := db.GetRecord(dbname, pname, pkg.ProjectPaths)
 	if err != nil {
 		return "Something went wrong"
@@ -55,7 +53,6 @@ func GetLastModifiedTime(dbname, pname string) string {
 		}
 		if !info.IsDir() && info.ModTime().After(lastModTime) {
 			lastModTime = info.ModTime()
-			lastModFile = info.Name()
 		}
 		return nil
 	})
