@@ -8,7 +8,6 @@ import (
 	"github.com/charmbracelet/glamour"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-
 	"github.com/theredditbandit/pman/pkg"
 	"github.com/theredditbandit/pman/pkg/db"
 	"github.com/theredditbandit/pman/pkg/utils"
@@ -39,25 +38,25 @@ func Test_FilterByStatus(t *testing.T) {
 			"key2": "status2",
 			"key3": "status1",
 		}
-		status := "status1"
+		status := []string{"status1"}
 
 		expectedData := map[string]string{
 			"key1": "status1",
 			"key3": "status1",
 		}
 
-		actualData := utils.FilterByStatus(data, status)
+		actualData := utils.FilterByStatuses(data, status)
 
 		assert.Equal(t, expectedData, actualData)
 	})
 
 	t.Run("Test FilterByStatus with empty data", func(t *testing.T) {
 		data := map[string]string{}
-		status := "status1"
+		status := []string{"status1"}
 
 		expectedData := map[string]string{}
 
-		actualData := utils.FilterByStatus(data, status)
+		actualData := utils.FilterByStatuses(data, status)
 
 		assert.Equal(t, expectedData, actualData)
 	})
