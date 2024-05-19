@@ -18,6 +18,7 @@ import (
 
 var (
 	ErrBeautifyMD = errors.New("error beautifying markdown")
+	ErrGetAlias   = errors.New("error getting alias")
 	ErrGetProject = errors.New("error getting project")
 	ErrReadREADME = errors.New("error reading README")
 )
@@ -85,19 +86,24 @@ func BeautifyMD(data []byte) (string, error) {
 
 // ReadREADME: returns the byte array of README.md of a project
 func ReadREADME(dbname, projectName string) ([]byte, error) {
-	actualName, err := db.GetRecord(dbname, projectName, pkg.ProjectAliasBucket)
-	if err == nil {
-		projectName = actualName
-	}
 	path, err := db.GetRecord(dbname, projectName, pkg.ProjectPaths)
 	if err != nil {
-		log.Printf("project: %v not a valid project\n", projectName)
-		return nil, errors.Join(ErrGetProject, err)
+		actualName, err := db.GetRecord(dbname, projectName, pkg.ProjectAliasBucket)
+		if err != nil {
+			log.Printf("project: %v not a valid project\n", projectName)
+			return nil, errors.Join(ErrGetAlias, err)
+		}
+		projectName = actualName
+		path, err = db.GetRecord(dbname, projectName, pkg.ProjectPaths)
+		if err != nil {
+			log.Printf("project: %v not a valid project\n", projectName)
+			return nil, errors.Join(ErrGetProject, err)
+		}
 	}
 	pPath := filepath.Join(path, "README.md")
 	data, err := os.ReadFile(pPath)
 	if err != nil {
-		return nil, errors.Join(ErrReadREADME, err)
+		return nil, errors.Join(ErrReadREADME, fmt.Errorf("something went wrong while reading README for %s: %w", projectName, err))
 	}
 	return data, nil
 }

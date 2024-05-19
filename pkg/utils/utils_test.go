@@ -124,7 +124,7 @@ func Test_ReadREADME(t *testing.T) {
 		assert.Equal(t, expected, actual)
 		require.NoError(t, err)
 	})
-	t.Run("Test ReadREADME with alias", func(t *testing.T) {
+	t.Run("Test ReadREADME with well alias and project", func(t *testing.T) {
 		alias := "project_alias"
 		expected := []byte{}
 
@@ -140,15 +140,33 @@ func Test_ReadREADME(t *testing.T) {
 		require.NoError(t, err)
 		f.Close()
 
-		err = db.WriteToDB(dbname, map[string]string{projectName: alias}, pkg.ProjectAliasBucket)
+		err = db.WriteToDB(dbname, map[string]string{alias: projectName}, pkg.ProjectAliasBucket)
 		require.NoError(t, err)
-		err = db.WriteToDB(dbname, map[string]string{projectName: projectPath, alias: projectPath}, pkg.ProjectPaths)
+		err = db.WriteToDB(dbname, map[string]string{projectName: projectPath}, pkg.ProjectPaths)
 		require.NoError(t, err)
 
-		actual, err := utils.ReadREADME(dbname, projectName)
+		actual, err := utils.ReadREADME(dbname, alias)
 
 		assert.Equal(t, expected, actual)
 		require.NoError(t, err)
+	})
+	t.Run("Test ReadREADME with well alias and bad project", func(t *testing.T) {
+		alias := "project_alias"
+		expected := []byte(nil)
+
+		t.Cleanup(func() {
+			err := db.DeleteDb(dbname)
+			require.NoError(t, err)
+			_ = os.RemoveAll(projectPath)
+		})
+
+		err := db.WriteToDB(dbname, map[string]string{alias: projectName}, pkg.ProjectAliasBucket)
+		require.NoError(t, err)
+
+		actual, err := utils.ReadREADME(dbname, alias)
+
+		assert.Equal(t, expected, actual)
+		require.ErrorIs(t, err, utils.ErrGetProject)
 	})
 
 	t.Run("Test ReadREADME with empty project name", func(t *testing.T) {
@@ -158,7 +176,7 @@ func Test_ReadREADME(t *testing.T) {
 		actual, err := utils.ReadREADME(dbname, projectName)
 
 		assert.Equal(t, expected, actual)
-		require.ErrorIs(t, err, utils.ErrGetProject)
+		require.ErrorIs(t, err, utils.ErrGetAlias)
 	})
 
 	t.Run("Test ReadREADME with invalid README file name", func(t *testing.T) {
