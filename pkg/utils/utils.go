@@ -18,6 +18,8 @@ import (
 
 var (
 	ErrBeautifyMD = errors.New("error beautifying markdown")
+	ErrGetAlias   = errors.New("error getting alias")
+	ErrGetProject = errors.New("error getting project")
 	ErrReadREADME = errors.New("error reading README")
 )
 
@@ -38,28 +40,16 @@ func FilterByStatuses(data map[string]string, status []string) map[string]string
 	return filteredData
 }
 
-// Deprecated: Use ui.RenderTable instead
-func PrintData(data map[string]string) {
-	for k, v := range data {
-		alias, err := db.GetRecord(db.DBName, k, pkg.ProjectAliasBucket)
-		if err == nil {
-			log.Printf("%s : %s (%s) \n", TitleCase(v), k, alias)
-		} else {
-			log.Printf("%s : %s  \n", TitleCase(v), k)
-		}
-	}
-}
-
-func GetLastModifiedTime(pname string) string {
+func GetLastModifiedTime(dbname, pname string) string {
 	var lastModTime time.Time
 	var lastModFile string
 	today := time.Now()
 	_ = lastModFile
-	pPath, err := db.GetRecord(db.DBName, pname, pkg.ProjectPaths)
+	pPath, err := db.GetRecord(dbname, pname, pkg.ProjectPaths)
 	if err != nil {
 		return "Something went wrong"
 	}
-	err = filepath.Walk(pPath, func(_ string, info os.FileInfo, err error) error {
+	_ = filepath.Walk(pPath, func(_ string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
@@ -69,9 +59,7 @@ func GetLastModifiedTime(pname string) string {
 		}
 		return nil
 	})
-	if err != nil {
-		return "Something went wrong"
-	}
+
 	switch fmt.Sprint(lastModTime.Date()) {
 	case fmt.Sprint(today.Date()):
 		return fmt.Sprintf("Today %s", lastModTime.Format("15:04"))
@@ -97,25 +85,25 @@ func BeautifyMD(data []byte) (string, error) {
 }
 
 // ReadREADME: returns the byte array of README.md of a project
-func ReadREADME(projectName string) ([]byte, error) {
-	path, err := db.GetRecord(db.DBName, projectName, pkg.ProjectPaths)
+func ReadREADME(dbname, projectName string) ([]byte, error) {
+	path, err := db.GetRecord(dbname, projectName, pkg.ProjectPaths)
 	if err != nil {
-		actualName, err := db.GetRecord(db.DBName, projectName, pkg.ProjectAliasBucket)
+		actualName, err := db.GetRecord(dbname, projectName, pkg.ProjectAliasBucket)
 		if err != nil {
 			log.Printf("project: %v not a valid project\n", projectName)
-			return nil, errors.Join(ErrReadREADME, err)
+			return nil, errors.Join(ErrGetAlias, err)
 		}
 		projectName = actualName
-		path, err = db.GetRecord(db.DBName, projectName, pkg.ProjectPaths)
+		path, err = db.GetRecord(dbname, projectName, pkg.ProjectPaths)
 		if err != nil {
 			log.Printf("project: %v not a valid project\n", projectName)
-			return nil, errors.Join(ErrReadREADME, err)
+			return nil, errors.Join(ErrGetProject, err)
 		}
 	}
 	pPath := filepath.Join(path, "README.md")
 	data, err := os.ReadFile(pPath)
 	if err != nil {
-		return nil, fmt.Errorf("something went wrong while reading README for %s: %w", projectName, err)
+		return nil, errors.Join(ErrReadREADME, fmt.Errorf("something went wrong while reading README for %s: %w", projectName, err))
 	}
 	return data, nil
 }
