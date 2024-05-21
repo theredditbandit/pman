@@ -51,7 +51,7 @@ var setCmd = &cobra.Command{
 		}
 
 		lastEdit := make(map[string]string)
-		lastEdit["lastWrite"] = fmt.Sprintf(time.Now().Format("02 Jan 06 15:04"))
+		lastEdit["lastWrite"] = fmt.Sprint(time.Now().Format("02 Jan 06 15:04"))
 		err = db.WriteToDB(db.DBName, lastEdit, ConfigBucket)
 		if err != nil {
 			log.Print(err)
