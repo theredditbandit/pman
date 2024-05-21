@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strconv"
 	"time"
 
 	"github.com/charmbracelet/glamour"
@@ -42,9 +43,7 @@ func FilterByStatuses(data map[string]string, status []string) map[string]string
 
 func GetLastModifiedTime(dbname, pname string) string {
 	var lastModTime time.Time
-	var lastModFile string
 	today := time.Now()
-	_ = lastModFile
 	pPath, err := db.GetRecord(dbname, pname, pkg.ProjectPaths)
 	if err != nil {
 		return "Something went wrong"
@@ -55,7 +54,6 @@ func GetLastModifiedTime(dbname, pname string) string {
 		}
 		if !info.IsDir() && info.ModTime().After(lastModTime) {
 			lastModTime = info.ModTime()
-			lastModFile = info.Name()
 		}
 		return nil
 	})
@@ -101,9 +99,31 @@ func ReadREADME(dbname, projectName string) ([]byte, error) {
 		}
 	}
 	pPath := filepath.Join(path, "README.md")
+	_, err = os.Stat(pPath)
+	if os.IsNotExist(err) {
+		msg := fmt.Sprintf("# README does not exist for %s", projectName)
+		return []byte(msg), nil
+	}
 	data, err := os.ReadFile(pPath)
 	if err != nil {
 		return nil, errors.Join(ErrReadREADME, fmt.Errorf("something went wrong while reading README for %s: %w", projectName, err))
 	}
 	return data, nil
+}
+
+func UpdateLastEditedTime() error {
+	r := fmt.Sprint(time.Now().Unix())
+	rec := map[string]string{"lastRefreshTime": r}
+	err := db.WriteToDB(db.DBName, rec, pkg.ConfigBucket)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func DayPassed(t string) bool {
+	oneDay := 86400
+	now := time.Now().Unix()
+	recTime, _ := strconv.ParseInt(t, 10, 64)
+	return now-recTime > int64(oneDay)
 }

@@ -2,9 +2,11 @@ package pkg
 
 import (
 	"errors"
+	"fmt"
 	"log"
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/theredditbandit/pman/pkg/db"
 )
@@ -13,6 +15,8 @@ const (
 	StatusBucket       = "projects"
 	ProjectPaths       = "projectPaths"
 	ProjectAliasBucket = "projectAliases"
+	LastUpdatedBucket  = "lastUpdated"
+	ConfigBucket       = "config"
 )
 
 var (
@@ -60,6 +64,14 @@ func InitDirs(args []string) error {
 		log.Print(err)
 		return err
 	}
+	lastEdit := make(map[string]string)
+	lastEdit["lastWrite"] = fmt.Sprint(time.Now().Format("02 Jan 06 15:04"))
+	err = db.WriteToDB(db.DBName, lastEdit, ConfigBucket)
+	if err != nil {
+		log.Print(err)
+		return err
+	}
+
 	return nil
 }
 

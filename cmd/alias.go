@@ -3,6 +3,8 @@ package cmd
 import (
 	"errors"
 	"fmt"
+	"log"
+	"time"
 
 	"github.com/spf13/cobra"
 
@@ -42,7 +44,13 @@ avlpn or something smaller and use that to query pman`,
 		if err != nil {
 			return err
 		}
-
+		lastEdit := make(map[string]string)
+		lastEdit["lastWrite"] = fmt.Sprint(time.Now().Format("02 Jan 06 15:04"))
+		err = db.WriteToDB(db.DBName, lastEdit, ConfigBucket)
+		if err != nil {
+			log.Print(err)
+			return err
+		}
 		return nil
 	},
 }

@@ -3,6 +3,8 @@ package cmd
 import (
 	"errors"
 	"fmt"
+	"log"
+	"time"
 
 	"github.com/spf13/cobra"
 
@@ -47,6 +49,15 @@ var setCmd = &cobra.Command{
 			fmt.Println("Error updating record : ", err)
 			return err
 		}
+
+		lastEdit := make(map[string]string)
+		lastEdit["lastWrite"] = fmt.Sprint(time.Now().Format("02 Jan 06 15:04"))
+		err = db.WriteToDB(db.DBName, lastEdit, ConfigBucket)
+		if err != nil {
+			log.Print(err)
+			return err
+		}
+
 		fmt.Printf("Project %s set to status %s\n", pname, status)
 		return nil
 	},

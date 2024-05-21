@@ -43,7 +43,7 @@ Use "pman [command] --help" for more information about a command.
 ## How does it work
 
 ### init
-when you run `pman init .` in any directory, it will look for subdirectories that contain a README.md or a .git folder and consider it as a project directory.
+When you run `pman init .` in any directory, it will look for subdirectories that contain a README.md or a .git folder and consider it as a project directory.
 ![image](https://github.com/theredditbandit/pman/assets/85390033/b9d6fcd3-41ca-4bd2-aa32-9b3e9bff1be8)
 
 ### set, status, info and filter

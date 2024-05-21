@@ -1,6 +1,7 @@
 package utils_test
 
 import (
+	"fmt"
 	"os"
 	"testing"
 	"time"
@@ -181,7 +182,7 @@ func Test_ReadREADME(t *testing.T) {
 	})
 
 	t.Run("Test ReadREADME with invalid README file name", func(t *testing.T) {
-		expected := []byte(nil)
+		expected := []byte(fmt.Sprintf("# README does not exist for %s", projectName))
 
 		t.Cleanup(func() {
 			err := db.DeleteDb(dbname)
@@ -201,7 +202,7 @@ func Test_ReadREADME(t *testing.T) {
 		actual, err := utils.ReadREADME(dbname, projectName)
 
 		assert.Equal(t, expected, actual)
-		require.ErrorIs(t, err, utils.ErrReadREADME)
+		require.NoError(t, err)
 	})
 }
 

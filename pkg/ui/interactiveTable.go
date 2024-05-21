@@ -57,16 +57,55 @@ func (m tableModel) View() string {
 	return baseStyle.Render(m.table.View()) + "\n"
 }
 
-func RenderInteractiveTable(data map[string]string) error {
+func RenderInteractiveTable(data map[string]string, refreshLastEditedTime bool) error {
+	var rows []table.Row
+	var lastEdited string
+
 	col := []table.Column{
 		{Title: "Status", Width: 20},
 		{Title: "Project", Width: 40},
 		{Title: "Last Edited", Width: 20},
 	}
-	var rows []table.Row
+
+	if refreshLastEditedTime {
+		err := utils.UpdateLastEditedTime()
+		if err != nil {
+			return err
+		}
+	} else {
+		rec, err := db.GetRecord(db.DBName, "lastRefreshTime", pkg.ConfigBucket)
+		if err != nil { // lastRefreshTime key does not exist in db
+			refreshLastEditedTime = true
+			err := utils.UpdateLastEditedTime()
+			if err != nil {
+				return err
+			}
+		}
+		if utils.DayPassed(rec) { // lastEdited values are more than a day old. need to refresh them
+			refreshLastEditedTime = true
+			err := utils.UpdateLastEditedTime()
+			if err != nil {
+				return err
+			}
+		}
+	}
+
 	for proj, status := range data {
 		alias, err := db.GetRecord(db.DBName, proj, pkg.ProjectAliasBucket)
-		lastEdited := utils.GetLastModifiedTime(db.DBName, proj)
+		if refreshLastEditedTime {
+			lastEdited = utils.GetLastModifiedTime(db.DBName, proj)
+			rec := map[string]string{proj: lastEdited}
+			err := db.WriteToDB(db.DBName, rec, pkg.LastUpdatedBucket)
+			if err != nil {
+				return err
+			}
+		} else {
+			lE, err := db.GetRecord(db.DBName, proj, pkg.LastUpdatedBucket)
+			if err != nil {
+				return err
+			}
+			lastEdited = lE
+		}
 		if err == nil {
 			pname := fmt.Sprintf("%s (%s)", proj, alias)
 			row := []string{utils.TitleCase(status), pname, lastEdited} // Status | projectName (alias) | lastEdited
