@@ -14,13 +14,51 @@ import (
 )
 
 // RenderTable: renders the given data as a table
-func RenderTable(data map[string]string) error {
+func RenderTable(data map[string]string, refreshLastEditedTime bool) error {
 	var tableData [][]string
+	var lastEdited string
+
+	if refreshLastEditedTime {
+		err := utils.UpdateLastEditedTime()
+		if err != nil {
+			return err
+		}
+	} else {
+		rec, err := db.GetRecord(db.DBName, "lastRefreshTime", pkg.ConfigBucket)
+		if err != nil { // lastRefreshTime key does not exist in db
+			refreshLastEditedTime = true
+			err := utils.UpdateLastEditedTime()
+			if err != nil {
+				return err
+			}
+		}
+		if utils.DayPassed(rec) { // lastEdited values are more than a day old. need to refresh them
+			refreshLastEditedTime = true
+			err := utils.UpdateLastEditedTime()
+			if err != nil {
+				return err
+			}
+		}
+	}
+
 	for p, status := range data {
 		alias, err := db.GetRecord(db.DBName, p, pkg.ProjectAliasBucket)
-		lastEdited := utils.GetLastModifiedTime(db.DBName, p)
+		if refreshLastEditedTime {
+			lastEdited = utils.GetLastModifiedTime(db.DBName, p)
+			rec := map[string]string{p: lastEdited}
+			err := db.WriteToDB(db.DBName, rec, pkg.LastUpdatedBucket)
+			if err != nil {
+				return err
+			}
+		} else {
+			lE, err := db.GetRecord(db.DBName, p, pkg.LastUpdatedBucket)
+			if err != nil {
+				return err
+			}
+			lastEdited = lE
+		}
 		if err == nil {
-			pname := fmt.Sprintf("%s (%s)", p, alias)
+			pname := fmt.Sprintf("%s (%s) nil error", p, alias)
 			row := []string{utils.TitleCase(status), pname, lastEdited} // Status | projectName (alias) | lastEdited
 			tableData = append(tableData, row)
 		} else {

@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strconv"
 	"time"
 
 	"github.com/charmbracelet/glamour"
@@ -108,4 +109,24 @@ func ReadREADME(dbname, projectName string) ([]byte, error) {
 		return nil, errors.Join(ErrReadREADME, fmt.Errorf("something went wrong while reading README for %s: %w", projectName, err))
 	}
 	return data, nil
+}
+
+func UpdateLastEditedTime() error {
+	r := fmt.Sprint(time.Now().Unix())
+	rec := map[string]string{"lastRefreshTime": r}
+	err := db.WriteToDB(db.DBName, rec, pkg.ConfigBucket)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func DayPassed(t string) bool {
+	oneDay := 86400
+	now := time.Now().Unix()
+	recTime, _ := strconv.ParseInt(t, 10, 64)
+	if now-recTime > int64(oneDay) {
+		return true
+	}
+	return false
 }
