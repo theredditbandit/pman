@@ -10,6 +10,7 @@ const (
 	StatusBucket       = "projects"
 	ProjectPathBucket  = "projectPaths"
 	ProjectAliasBucket = "projectAliases"
+	ConfigBucket       = "config"
 	version            = "1.0"
 )
 

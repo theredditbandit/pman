@@ -3,6 +3,8 @@ package cmd
 import (
 	"errors"
 	"fmt"
+	"log"
+	"time"
 
 	"github.com/spf13/cobra"
 
@@ -50,6 +52,13 @@ var delCmd = &cobra.Command{
 		}
 		err = nil
 		if err != nil {
+			return err
+		}
+		lastEdit := make(map[string]string)
+		lastEdit["lastWrite"] = fmt.Sprintf(time.Now().Format("02 Jan 06 15:04"))
+		err = db.WriteToDB(db.DBName, lastEdit, ConfigBucket)
+		if err != nil {
+			log.Print(err)
 			return err
 		}
 		fmt.Printf("Successfully deleted %s from the db \n", projName)
