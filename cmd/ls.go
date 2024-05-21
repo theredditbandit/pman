@@ -19,7 +19,6 @@ var lsCmd = &cobra.Command{
     `,
 	RunE: func(cmd *cobra.Command, _ []string) error {
 		filterFlag, _ := cmd.Flags().GetString("f")
-		oldUI, _ := cmd.Flags().GetBool("c")
 		refreshLastEditTime, _ := cmd.Flags().GetBool("r")
 		data, err := db.GetAllRecords(db.DBName, StatusBucket)
 		if err != nil {
@@ -29,16 +28,12 @@ var lsCmd = &cobra.Command{
 			fmt.Println("Filtering by status : ", filterFlag)
 			data = utils.FilterByStatuses(data, strings.Split(filterFlag, ","))
 		}
-		if oldUI {
-			return ui.RenderTable(data, refreshLastEditTime)
-		}
-		return ui.RenderInteractiveTable(data, refreshLastEditTime)
+		return ui.RenderTable(data, refreshLastEditTime)
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(lsCmd)
 	lsCmd.Flags().String("f", "", "Filter projects by status. Usage : pman ls --f <status1[,status2]>")
-	lsCmd.Flags().Bool("c", false, "list projects using the colorful table. Usage : pman ls --c")
 	lsCmd.Flags().Bool("r", false, "Refresh Last Edited time: pman ls --r")
 }
