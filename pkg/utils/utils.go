@@ -5,8 +5,10 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/charmbracelet/glamour"
@@ -126,4 +128,13 @@ func DayPassed(t string) bool {
 	now := time.Now().Unix()
 	recTime, _ := strconv.ParseInt(t, 10, 64)
 	return now-recTime > int64(oneDay)
+}
+
+func GetVersion() string {
+	cmd := exec.Command("git", "describe", "--tags", "--always")
+	out, err := cmd.Output()
+	if err != nil {
+		return "unknown"
+	}
+	return strings.TrimSpace(string(out))
 }
