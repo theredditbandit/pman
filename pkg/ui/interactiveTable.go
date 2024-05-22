@@ -95,7 +95,8 @@ func RenderInteractiveTable(data map[string]string, refreshLastEditedTime bool) 
 	for proj, status := range data {
 		alias, err := db.GetRecord(db.DBName, proj, pkg.ProjectAliasBucket)
 		if refreshLastEditedTime {
-			lastEdited, timestamp = utils.GetLastModifiedTime(db.DBName, proj)
+			t := utils.GetLastModifiedTime(db.DBName, proj)
+			lastEdited, timestamp = utils.ParseTime(t)
 			rec := map[string]string{proj: fmt.Sprintf("%s-%d", lastEdited, timestamp)}
 			err := db.WriteToDB(db.DBName, rec, pkg.LastUpdatedBucket)
 			if err != nil {

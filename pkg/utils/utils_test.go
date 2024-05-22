@@ -218,15 +218,19 @@ func Test_GetLastModifiedTime(t *testing.T) {
 		require.NoError(t, err)
 		f, err := os.Create(projectPath + "/README.md")
 		require.NoError(t, err)
+		fCreateTime := time.Now()
+		correctModTime := fCreateTime.Format("02 Jan 06 15:04")
+		err = os.Chtimes(projectPath+"/README.md", fCreateTime, fCreateTime)
+		require.NoError(t, err)
 		f.Close()
 
 		err = db.WriteToDB(dbname, map[string]string{projectName: projectPath}, pkg.ProjectPaths)
 		require.NoError(t, err)
 
-		actual, _ := utils.GetLastModifiedTime(dbname, projectName)
+		actual := utils.GetLastModifiedTime(dbname, projectName)
 
 		assert.NotEqual(t, expectedMsg, actual)
-		assert.Contains(t, actual, "Today")
+		assert.Equal(t, correctModTime, actual)
 		assert.NotEmpty(t, actual)
 	})
 
@@ -241,17 +245,19 @@ func Test_GetLastModifiedTime(t *testing.T) {
 		require.NoError(t, err)
 		f, err := os.Create(projectPath + "/README.md")
 		require.NoError(t, err)
-		err = os.Chtimes(projectPath+"/README.md", time.Now().AddDate(0, 0, -1), time.Now().AddDate(0, 0, -1))
+		fCreateTime := time.Now().AddDate(0, 0, -1)
+		correctModTime := fCreateTime.Format("02 Jan 06 15:04")
+		err = os.Chtimes(projectPath+"/README.md", fCreateTime, fCreateTime)
 		require.NoError(t, err)
 		f.Close()
 
 		err = db.WriteToDB(dbname, map[string]string{projectName: projectPath}, pkg.ProjectPaths)
 		require.NoError(t, err)
 
-		actual, _ := utils.GetLastModifiedTime(dbname, projectName)
+		actual := utils.GetLastModifiedTime(dbname, projectName)
 
 		assert.NotEqual(t, expectedMsg, actual)
-		assert.Contains(t, actual, "Yesterday")
+		assert.Equal(t, correctModTime, actual)
 		assert.NotEmpty(t, actual)
 	})
 	t.Run("Test GetLastModifiedTime under normal conditions: case old modification", func(t *testing.T) {
@@ -272,7 +278,7 @@ func Test_GetLastModifiedTime(t *testing.T) {
 		err = db.WriteToDB(dbname, map[string]string{projectName: projectPath}, pkg.ProjectPaths)
 		require.NoError(t, err)
 
-		actual, _ := utils.GetLastModifiedTime(dbname, projectName)
+		actual := utils.GetLastModifiedTime(dbname, projectName)
 
 		assert.NotEqual(t, expectedMsg, actual)
 		assert.NotEmpty(t, actual)
@@ -280,7 +286,7 @@ func Test_GetLastModifiedTime(t *testing.T) {
 	t.Run("Test GetLastModifiedTime with invalid project", func(t *testing.T) {
 		projectPath := "./invalid_project"
 
-		actual, _ := utils.GetLastModifiedTime(dbname, projectPath)
+		actual := utils.GetLastModifiedTime(dbname, projectPath)
 
 		assert.Equal(t, expectedMsg, actual)
 	})
