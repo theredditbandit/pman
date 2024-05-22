@@ -5,10 +5,8 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/charmbracelet/glamour"
@@ -43,12 +41,13 @@ func FilterByStatuses(data map[string]string, status []string) map[string]string
 	return filteredData
 }
 
-func GetLastModifiedTime(dbname, pname string) string {
+// GetLastModifiedTime returns the last modified time and the unix timestamp as well that is used to sort the projects later
+func GetLastModifiedTime(dbname, pname string) (string, int64) {
 	var lastModTime time.Time
 	today := time.Now()
 	pPath, err := db.GetRecord(dbname, pname, pkg.ProjectPaths)
 	if err != nil {
-		return "Something went wrong"
+		return "Something went wrong", 0
 	}
 	_ = filepath.Walk(pPath, func(_ string, info os.FileInfo, err error) error {
 		if err != nil {
@@ -62,11 +61,11 @@ func GetLastModifiedTime(dbname, pname string) string {
 
 	switch fmt.Sprint(lastModTime.Date()) {
 	case fmt.Sprint(today.Date()):
-		return fmt.Sprintf("Today %s", lastModTime.Format("15:04"))
+		return fmt.Sprintf("Today %s", lastModTime.Format("15:04")), int64(lastModTime.Unix())
 	case fmt.Sprint(today.AddDate(0, 0, -1).Date()):
-		return fmt.Sprintf("Yesterday %s", lastModTime.Format("17:00"))
+		return fmt.Sprintf("Yesterday %s", lastModTime.Format("17:00")), int64(lastModTime.Unix())
 	}
-	return fmt.Sprint(lastModTime.Format("02 Jan 06 15:04"))
+	return fmt.Sprint(lastModTime.Format("02 Jan 06 15:04")), int64(lastModTime.Unix())
 }
 
 // BeautifyMD: returns styled markdown

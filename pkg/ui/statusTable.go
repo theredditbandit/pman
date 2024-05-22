@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 	"sort"
+	"strconv"
+	"strings"
 
 	"github.com/charmbracelet/lipgloss"
 	"github.com/charmbracelet/lipgloss/table"
@@ -17,6 +19,7 @@ import (
 func RenderTable(data map[string]string, refreshLastEditedTime bool) error {
 	var tableData [][]string
 	var lastEdited string
+	var timestamp int64
 
 	if refreshLastEditedTime {
 		err := utils.UpdateLastEditedTime()
@@ -44,8 +47,8 @@ func RenderTable(data map[string]string, refreshLastEditedTime bool) error {
 	for p, status := range data {
 		alias, err := db.GetRecord(db.DBName, p, pkg.ProjectAliasBucket)
 		if refreshLastEditedTime {
-			lastEdited = utils.GetLastModifiedTime(db.DBName, p)
-			rec := map[string]string{p: lastEdited}
+			lastEdited, timestamp = utils.GetLastModifiedTime(db.DBName, p)
+			rec := map[string]string{p: fmt.Sprintf("%s-%d", lastEdited, timestamp)}
 			err := db.WriteToDB(db.DBName, rec, pkg.LastUpdatedBucket)
 			if err != nil {
 				return err
@@ -55,14 +58,20 @@ func RenderTable(data map[string]string, refreshLastEditedTime bool) error {
 			if err != nil {
 				return err
 			}
-			lastEdited = lE
+			out := strings.Split(lE, "-")
+			lastEdited = out[0]
+			tstmp, err := strconv.ParseInt(out[1], 10, 64)
+			if err != nil {
+				return err
+			}
+			timestamp = tstmp
 		}
 		if err == nil {
 			pname := fmt.Sprintf("%s (%s) nil error", p, alias)
-			row := []string{utils.TitleCase(status), pname, lastEdited} // Status | projectName (alias) | lastEdited
+			row := []string{utils.TitleCase(status), pname, lastEdited, fmt.Sprint(timestamp)} // Status | projectName (alias) | lastEdited | timestamp
 			tableData = append(tableData, row)
 		} else {
-			row := []string{utils.TitleCase(status), p, lastEdited} // Status | projectName | lastEdited
+			row := []string{utils.TitleCase(status), p, lastEdited, fmt.Sprint(timestamp)} // Status | projectName | lastEdited | timestamp
 			tableData = append(tableData, row)
 		}
 	}
@@ -75,10 +84,22 @@ func RenderTable(data map[string]string, refreshLastEditedTime bool) error {
 		return fmt.Errorf("no database initialized")
 	}
 	sort.Slice(tableData, func(i, j int) bool {
-		valI := tableData[i][1]
-		valJ := tableData[j][1]
-		return valI < valJ
+		valI, _ := strconv.ParseInt(tableData[i][3], 10, 64)
+		valJ, _ := strconv.ParseInt(tableData[j][3], 10, 64)
+		return valI > valJ
 	})
+
+	cleanUp := func(table [][]string) [][]string { // cleanUp func removes the unix timestamp col from the tabledata
+		result := make([][]string, len(table))
+		for i, inner := range table {
+			n := len(inner)
+			result[i] = inner[:n-1]
+		}
+		return result
+	}
+
+	tableData = cleanUp(tableData)
+
 	re := lipgloss.NewRenderer(os.Stdout)
 	baseStyle := re.NewStyle().Padding(0, 1)
 	headerStyle := baseStyle.Copy().Foreground(lipgloss.Color("252")).Bold(true)
