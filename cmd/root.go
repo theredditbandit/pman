@@ -11,7 +11,7 @@ const (
 	ProjectPathBucket  = "projectPaths"
 	ProjectAliasBucket = "projectAliases"
 	ConfigBucket       = "config"
-	version            = "1.0.1"
+	version            = "1.1.0"
 )
 
 var (
