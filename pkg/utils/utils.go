@@ -129,12 +129,3 @@ func DayPassed(t string) bool {
 	recTime, _ := strconv.ParseInt(t, 10, 64)
 	return now-recTime > int64(oneDay)
 }
-
-func GetVersion() string {
-	cmd := exec.Command("git", "describe", "--tags", "--always")
-	out, err := cmd.Output()
-	if err != nil {
-		return "unknown"
-	}
-	return strings.TrimSpace(string(out))
-}
