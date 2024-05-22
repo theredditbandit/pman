@@ -27,7 +27,10 @@ var rootCmd = &cobra.Command{
 	SilenceUsage: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if len(args) == 0 {
-			cmd.Help()
+			err := cmd.Help()
+			if err != nil {
+				return errors.Join(err, ErrNoArgs)
+			}
 			return ErrNoArgs
 		}
 		return nil
