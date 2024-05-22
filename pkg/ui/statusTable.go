@@ -89,9 +89,9 @@ func RenderTable(data map[string]string, refreshLastEditedTime bool) error {
 		return valI > valJ
 	})
 
-	cleanUp := func(table [][]string) [][]string { // cleanUp func removes the unix timestamp col from the tabledata
-		result := make([][]string, len(table))
-		for i, inner := range table {
+	cleanUp := func(tbl [][]string) [][]string { // cleanUp func removes the unix timestamp col from the tabledata
+		result := make([][]string, len(tbl))
+		for i, inner := range tbl {
 			n := len(inner)
 			result[i] = inner[:n-1]
 		}
