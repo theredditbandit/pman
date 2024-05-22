@@ -4,6 +4,8 @@ import (
 	"errors"
 
 	"github.com/spf13/cobra"
+
+	"github.com/theredditbandit/pman/pkg/utils"
 )
 
 const (
@@ -21,7 +23,7 @@ var (
 var rootCmd = &cobra.Command{
 	Use:          "pman",
 	Short:        "A cli project manager",
-	Version:      version,
+	Version:      utils.GetVersion(),
 	SilenceUsage: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if len(args) == 0 {
