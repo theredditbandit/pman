@@ -4,8 +4,6 @@ import (
 	"errors"
 
 	"github.com/spf13/cobra"
-
-	"github.com/theredditbandit/pman/pkg/utils"
 )
 
 const (
@@ -13,7 +11,7 @@ const (
 	ProjectPathBucket  = "projectPaths"
 	ProjectAliasBucket = "projectAliases"
 	ConfigBucket       = "config"
-	version            = "1.0"
+	version            = "1.0.1"
 )
 
 var (
@@ -23,7 +21,7 @@ var (
 var rootCmd = &cobra.Command{
 	Use:          "pman",
 	Short:        "A cli project manager",
-	Version:      utils.GetVersion(),
+	Version:      version,
 	SilenceUsage: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		if len(args) == 0 {

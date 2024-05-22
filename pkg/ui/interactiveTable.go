@@ -3,6 +3,7 @@ package ui
 import (
 	"fmt"
 	"sort"
+	"strconv"
 	"strings"
 
 	"github.com/charmbracelet/bubbles/table"
@@ -60,6 +61,7 @@ func (m tableModel) View() string {
 func RenderInteractiveTable(data map[string]string, refreshLastEditedTime bool) error {
 	var rows []table.Row
 	var lastEdited string
+	var timestamp int64
 
 	col := []table.Column{
 		{Title: "Status", Width: 20},
@@ -93,8 +95,8 @@ func RenderInteractiveTable(data map[string]string, refreshLastEditedTime bool) 
 	for proj, status := range data {
 		alias, err := db.GetRecord(db.DBName, proj, pkg.ProjectAliasBucket)
 		if refreshLastEditedTime {
-			lastEdited = utils.GetLastModifiedTime(db.DBName, proj)
-			rec := map[string]string{proj: lastEdited}
+			lastEdited, timestamp = utils.GetLastModifiedTime(db.DBName, proj)
+			rec := map[string]string{proj: fmt.Sprintf("%s-%d", lastEdited, timestamp)}
 			err := db.WriteToDB(db.DBName, rec, pkg.LastUpdatedBucket)
 			if err != nil {
 				return err
@@ -104,14 +106,20 @@ func RenderInteractiveTable(data map[string]string, refreshLastEditedTime bool) 
 			if err != nil {
 				return err
 			}
-			lastEdited = lE
+			out := strings.Split(lE, "-")
+			lastEdited = out[0]
+			tstmp, err := strconv.ParseInt(out[1], 10, 64)
+			if err != nil {
+				return err
+			}
+			timestamp = tstmp
 		}
 		if err == nil {
 			pname := fmt.Sprintf("%s (%s)", proj, alias)
-			row := []string{utils.TitleCase(status), pname, lastEdited} // Status | projectName (alias) | lastEdited
+			row := []string{utils.TitleCase(status), pname, lastEdited, fmt.Sprint(timestamp)} // Status | projectName (alias) | lastEdited | timestamp
 			rows = append(rows, row)
 		} else {
-			row := []string{utils.TitleCase(status), proj, lastEdited} // Status | projectName | lastEdited
+			row := []string{utils.TitleCase(status), proj, lastEdited, fmt.Sprint(timestamp)} // Status | projectName | lastEdited | timestamp
 			rows = append(rows, row)
 		}
 	}
@@ -125,10 +133,19 @@ func RenderInteractiveTable(data map[string]string, refreshLastEditedTime bool) 
 		return nil
 	}
 	sort.Slice(rows, func(i, j int) bool {
-		valI := rows[i][1]
-		valJ := rows[j][1]
-		return valI < valJ
+		valI, _ := strconv.ParseInt(rows[i][3], 10, 64)
+		valJ, _ := strconv.ParseInt(rows[j][3], 10, 64)
+		return valI > valJ
 	})
+	cleanUp := func(r []table.Row) []table.Row {
+		result := make([]table.Row, len(r))
+		for i, inner := range r {
+			n := len(inner)
+			result[i] = inner[:n-1]
+		}
+		return result
+	}
+	rows = cleanUp(rows)
 	t := table.New(
 		table.WithColumns(col),
 		table.WithRows(rows),
