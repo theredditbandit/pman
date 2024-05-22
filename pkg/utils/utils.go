@@ -41,13 +41,12 @@ func FilterByStatuses(data map[string]string, status []string) map[string]string
 	return filteredData
 }
 
-// GetLastModifiedTime returns the last modified time and the unix timestamp as well that is used to sort the projects later
-func GetLastModifiedTime(dbname, pname string) (string, int64) {
+// GetLastModifiedTime returns the last modified time
+func GetLastModifiedTime(dbname, pname string) string {
 	var lastModTime time.Time
-	today := time.Now()
 	pPath, err := db.GetRecord(dbname, pname, pkg.ProjectPaths)
 	if err != nil {
-		return "Something went wrong", 0
+		return "Something went wrong"
 	}
 	_ = filepath.Walk(pPath, func(_ string, info os.FileInfo, err error) error {
 		if err != nil {
@@ -58,14 +57,7 @@ func GetLastModifiedTime(dbname, pname string) (string, int64) {
 		}
 		return nil
 	})
-
-	switch fmt.Sprint(lastModTime.Date()) {
-	case fmt.Sprint(today.Date()):
-		return fmt.Sprintf("Today %s", lastModTime.Format("15:04")), int64(lastModTime.Unix())
-	case fmt.Sprint(today.AddDate(0, 0, -1).Date()):
-		return fmt.Sprintf("Yesterday %s", lastModTime.Format("17:00")), int64(lastModTime.Unix())
-	}
-	return fmt.Sprint(lastModTime.Format("02 Jan 06 15:04")), int64(lastModTime.Unix())
+	return fmt.Sprint(lastModTime.Format("02 Jan 06 15:04"))
 }
 
 // BeautifyMD: returns styled markdown
@@ -127,4 +119,21 @@ func DayPassed(t string) bool {
 	now := time.Now().Unix()
 	recTime, _ := strconv.ParseInt(t, 10, 64)
 	return now-recTime > int64(oneDay)
+}
+
+func ParseTime(tstr string) (string, int64) {
+	layout := "02 Jan 06 15:04"
+	p, err := time.Parse(layout, tstr)
+	timeStamp := p.Unix()
+	if err != nil {
+		return "unnkown", 0
+	}
+	today := time.Now()
+	switch fmt.Sprint(p.Date()) {
+	case fmt.Sprint(today.Date()):
+		return fmt.Sprintf("Today %s", p.Format("15:04")), timeStamp
+	case fmt.Sprint(today.AddDate(0, 0, -1).Date()):
+		return fmt.Sprintf("Yesterday %s", p.Format("17:00")), timeStamp
+	}
+	return tstr, timeStamp
 }

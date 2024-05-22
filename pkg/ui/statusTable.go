@@ -47,7 +47,8 @@ func RenderTable(data map[string]string, refreshLastEditedTime bool) error {
 	for p, status := range data {
 		alias, err := db.GetRecord(db.DBName, p, pkg.ProjectAliasBucket)
 		if refreshLastEditedTime {
-			lastEdited, timestamp = utils.GetLastModifiedTime(db.DBName, p)
+			t := utils.GetLastModifiedTime(db.DBName, p)
+			lastEdited, timestamp = utils.ParseTime(t)
 			rec := map[string]string{p: fmt.Sprintf("%s-%d", lastEdited, timestamp)}
 			err := db.WriteToDB(db.DBName, rec, pkg.LastUpdatedBucket)
 			if err != nil {
