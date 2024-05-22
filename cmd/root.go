@@ -23,8 +23,9 @@ var rootCmd = &cobra.Command{
 	Short:        "A cli project manager",
 	Version:      version,
 	SilenceUsage: true,
-	RunE: func(_ *cobra.Command, args []string) error {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		if len(args) == 0 {
+			cmd.Help()
 			return ErrNoArgs
 		}
 		return nil
