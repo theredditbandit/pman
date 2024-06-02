@@ -103,7 +103,7 @@ func RenderTable(data map[string]string, refreshLastEditedTime bool) error {
 
 	re := lipgloss.NewRenderer(os.Stdout)
 	baseStyle := re.NewStyle().Padding(0, 1)
-	headerStyle := baseStyle.Copy().Foreground(lipgloss.Color("252")).Bold(true)
+	headerStyle := baseStyle.Foreground(lipgloss.Color("252")).Bold(true)
 	// selectedStyle := baseStyle.Copy().Foreground(lipgloss.Color("#01BE85")).Background(lipgloss.Color("#00432F"))
 	statusColors := map[string]lipgloss.Color{
 		"Idea":        lipgloss.Color("#FF87D7"),
@@ -129,10 +129,10 @@ func RenderTable(data map[string]string, refreshLastEditedTime bool) error {
 			}
 			color, ok := statusColors[fmt.Sprint(tableData[row-1][0])]
 			if ok {
-				return baseStyle.Copy().Foreground(color)
+				return baseStyle.Foreground(color)
 			}
 			color = statusColors["Default"]
-			return baseStyle.Copy().Foreground(color)
+			return baseStyle.Foreground(color)
 		})
 	fmt.Println(t)
 	return nil

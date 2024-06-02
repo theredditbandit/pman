@@ -24,7 +24,7 @@ var (
 	infoStyle = func() lipgloss.Style {
 		b := lipgloss.RoundedBorder()
 		b.Left = "$"
-		return pagerTitleStyle.Copy().BorderStyle(b)
+		return pagerTitleStyle.BorderStyle(b)
 	}()
 )
 
