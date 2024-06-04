@@ -112,6 +112,7 @@ func UpdateLastEditedTime() error {
 		return err
 	}
 	return nil
+
 }
 
 func DayPassed(t string) bool {
@@ -136,4 +137,9 @@ func ParseTime(tstr string) (string, int64) {
 		return fmt.Sprintf("Yesterday %s", p.Format("17:00")), timeStamp
 	}
 	return tstr, timeStamp
+}
+
+// Director to changing cwd to whatever the project whatever the project directory is
+func Director(path string) {
+
 }
