@@ -140,6 +140,6 @@ func ParseTime(tstr string) (string, int64) {
 }
 
 // Director to changing cwd to whatever the project whatever the project directory is
-func Director(path string) {
-
+func Director(path string) error {
+	return nil
 }
