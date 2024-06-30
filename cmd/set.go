@@ -8,6 +8,7 @@ import (
 
 	"github.com/spf13/cobra"
 
+	c "github.com/theredditbandit/pman/constants"
 	"github.com/theredditbandit/pman/pkg/db"
 )
 
@@ -38,13 +39,13 @@ var setCmd = &cobra.Command{
 		var pname string
 		alias := args[0]
 		status := args[1]
-		project, err := db.GetRecord(db.DBName, alias, ProjectAliasBucket)
+		project, err := db.GetRecord(db.DBName, alias, c.ProjectAliasBucket)
 		if err == nil {
 			pname = project
 		} else {
 			pname = alias
 		}
-		err = db.UpdateRec(db.DBName, pname, status, StatusBucket)
+		err = db.UpdateRec(db.DBName, pname, status, c.StatusBucket)
 		if err != nil {
 			fmt.Println("Error updating record : ", err)
 			return err
@@ -52,7 +53,7 @@ var setCmd = &cobra.Command{
 
 		lastEdit := make(map[string]string)
 		lastEdit["lastWrite"] = fmt.Sprint(time.Now().Format("02 Jan 06 15:04"))
-		err = db.WriteToDB(db.DBName, lastEdit, ConfigBucket)
+		err = db.WriteToDB(db.DBName, lastEdit, c.ConfigBucket)
 		if err != nil {
 			log.Print(err)
 			return err

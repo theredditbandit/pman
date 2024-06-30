@@ -8,15 +8,8 @@ import (
 	"path/filepath"
 	"time"
 
+	c "github.com/theredditbandit/pman/constants"
 	"github.com/theredditbandit/pman/pkg/db"
-)
-
-const (
-	StatusBucket       = "projects"
-	ProjectPaths       = "projectPaths"
-	ProjectAliasBucket = "projectAliases"
-	LastUpdatedBucket  = "lastUpdated"
-	ConfigBucket       = "config"
 )
 
 var (
@@ -54,19 +47,19 @@ func InitDirs(args []string) error {
 		projectStatusMap[filepath.Base(k)] = v // filepath.Base(k) : project name
 		projectPathMap[filepath.Base(k)] = k
 	}
-	err = db.WriteToDB(db.DBName, projectStatusMap, StatusBucket)
+	err = db.WriteToDB(db.DBName, projectStatusMap, c.StatusBucket)
 	if err != nil {
 		log.Print(err)
 		return err
 	}
-	err = db.WriteToDB(db.DBName, projectPathMap, ProjectPaths)
+	err = db.WriteToDB(db.DBName, projectPathMap, c.ProjectPaths)
 	if err != nil {
 		log.Print(err)
 		return err
 	}
 	lastEdit := make(map[string]string)
 	lastEdit["lastWrite"] = fmt.Sprint(time.Now().Format("02 Jan 06 15:04"))
-	err = db.WriteToDB(db.DBName, lastEdit, ConfigBucket)
+	err = db.WriteToDB(db.DBName, lastEdit, c.ConfigBucket)
 	if err != nil {
 		log.Print(err)
 		return err

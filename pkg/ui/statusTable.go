@@ -2,6 +2,7 @@ package ui
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"sort"
 	"strconv"
@@ -10,7 +11,7 @@ import (
 	"github.com/charmbracelet/lipgloss"
 	"github.com/charmbracelet/lipgloss/table"
 
-	"github.com/theredditbandit/pman/pkg"
+	c "github.com/theredditbandit/pman/constants"
 	"github.com/theredditbandit/pman/pkg/db"
 	"github.com/theredditbandit/pman/pkg/utils"
 )
@@ -27,7 +28,7 @@ func RenderTable(data map[string]string, refreshLastEditedTime bool) error {
 			return err
 		}
 	} else {
-		rec, err := db.GetRecord(db.DBName, "lastRefreshTime", pkg.ConfigBucket)
+		rec, err := db.GetRecord(db.DBName, "lastRefreshTime", c.ConfigBucket)
 		if err != nil { // lastRefreshTime key does not exist in db
 			refreshLastEditedTime = true
 			err := utils.UpdateLastEditedTime()
@@ -43,20 +44,25 @@ func RenderTable(data map[string]string, refreshLastEditedTime bool) error {
 			}
 		}
 	}
-
 	for p, status := range data {
-		alias, err := db.GetRecord(db.DBName, p, pkg.ProjectAliasBucket)
+		log.Println("===============================================")
+		alias, err := db.GetRecord(db.DBName, p, c.ProjectAliasBucket)
+		log.Println("after get record func", "  err=", err)
+		log.Println("p=", p)
+		log.Println("status=", status)
 		if refreshLastEditedTime {
 			t := utils.GetLastModifiedTime(db.DBName, p)
 			lastEdited, timestamp = utils.ParseTime(t)
 			rec := map[string]string{p: fmt.Sprintf("%s-%d", lastEdited, timestamp)}
-			err := db.WriteToDB(db.DBName, rec, pkg.LastUpdatedBucket)
+			err := db.WriteToDB(db.DBName, rec, c.LastUpdatedBucket)
 			if err != nil {
 				return err
 			}
 		} else {
-			lE, err := db.GetRecord(db.DBName, p, pkg.LastUpdatedBucket)
+			log.Println("b4 key nf error", "p=", p, "bucket=", c.LastUpdatedBucket)
+			lE, err := db.GetRecord(db.DBName, p, c.LastUpdatedBucket)
 			if err != nil {
+				log.Println("aftert key nf error")
 				return err
 			}
 			out := strings.Split(lE, "-")

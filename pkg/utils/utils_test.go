@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/theredditbandit/pman/pkg"
+	c "github.com/theredditbandit/pman/constants"
 	"github.com/theredditbandit/pman/pkg/db"
 	"github.com/theredditbandit/pman/pkg/utils"
 )
@@ -118,7 +118,7 @@ func Test_ReadREADME(t *testing.T) {
 		require.NoError(t, err)
 		f.Close()
 
-		err = db.WriteToDB(dbname, map[string]string{projectName: projectPath}, pkg.ProjectPaths)
+		err = db.WriteToDB(dbname, map[string]string{projectName: projectPath}, c.ProjectPaths)
 		require.NoError(t, err)
 
 		actual, err := utils.ReadREADME(dbname, projectName)
@@ -142,9 +142,9 @@ func Test_ReadREADME(t *testing.T) {
 		require.NoError(t, err)
 		f.Close()
 
-		err = db.WriteToDB(dbname, map[string]string{alias: projectName}, pkg.ProjectAliasBucket)
+		err = db.WriteToDB(dbname, map[string]string{alias: projectName}, c.ProjectAliasBucket)
 		require.NoError(t, err)
-		err = db.WriteToDB(dbname, map[string]string{projectName: projectPath}, pkg.ProjectPaths)
+		err = db.WriteToDB(dbname, map[string]string{projectName: projectPath}, c.ProjectPaths)
 		require.NoError(t, err)
 
 		actual, err := utils.ReadREADME(dbname, alias)
@@ -162,7 +162,7 @@ func Test_ReadREADME(t *testing.T) {
 			_ = os.RemoveAll(projectPath)
 		})
 
-		err := db.WriteToDB(dbname, map[string]string{alias: projectName}, pkg.ProjectAliasBucket)
+		err := db.WriteToDB(dbname, map[string]string{alias: projectName}, c.ProjectAliasBucket)
 		require.NoError(t, err)
 
 		actual, err := utils.ReadREADME(dbname, alias)
@@ -196,7 +196,7 @@ func Test_ReadREADME(t *testing.T) {
 		require.NoError(t, err)
 		f.Close()
 
-		err = db.WriteToDB(dbname, map[string]string{projectName: projectPath}, pkg.ProjectPaths)
+		err = db.WriteToDB(dbname, map[string]string{projectName: projectPath}, c.ProjectPaths)
 		require.NoError(t, err)
 
 		actual, err := utils.ReadREADME(dbname, projectName)
@@ -224,7 +224,7 @@ func Test_GetLastModifiedTime(t *testing.T) {
 		require.NoError(t, err)
 		f.Close()
 
-		err = db.WriteToDB(dbname, map[string]string{projectName: projectPath}, pkg.ProjectPaths)
+		err = db.WriteToDB(dbname, map[string]string{projectName: projectPath}, c.ProjectPaths)
 		require.NoError(t, err)
 
 		actual := utils.GetLastModifiedTime(dbname, projectName)
@@ -251,7 +251,7 @@ func Test_GetLastModifiedTime(t *testing.T) {
 		require.NoError(t, err)
 		f.Close()
 
-		err = db.WriteToDB(dbname, map[string]string{projectName: projectPath}, pkg.ProjectPaths)
+		err = db.WriteToDB(dbname, map[string]string{projectName: projectPath}, c.ProjectPaths)
 		require.NoError(t, err)
 
 		actual := utils.GetLastModifiedTime(dbname, projectName)
@@ -275,7 +275,7 @@ func Test_GetLastModifiedTime(t *testing.T) {
 		require.NoError(t, err)
 		f.Close()
 
-		err = db.WriteToDB(dbname, map[string]string{projectName: projectPath}, pkg.ProjectPaths)
+		err = db.WriteToDB(dbname, map[string]string{projectName: projectPath}, c.ProjectPaths)
 		require.NoError(t, err)
 
 		actual := utils.GetLastModifiedTime(dbname, projectName)

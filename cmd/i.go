@@ -6,6 +6,7 @@ import (
 
 	"github.com/spf13/cobra"
 
+	c "github.com/theredditbandit/pman/constants"
 	"github.com/theredditbandit/pman/pkg/db"
 	"github.com/theredditbandit/pman/pkg/ui"
 	"github.com/theredditbandit/pman/pkg/utils"
@@ -19,7 +20,7 @@ var iCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, _ []string) error {
 		filterFlag, _ := cmd.Flags().GetString("f")
 		refreshLastEditTime, _ := cmd.Flags().GetBool("r")
-		data, err := db.GetAllRecords(db.DBName, StatusBucket)
+		data, err := db.GetAllRecords(db.DBName, c.StatusBucket)
 		if err != nil {
 			return err
 		}

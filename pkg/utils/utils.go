@@ -13,7 +13,7 @@ import (
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
 
-	"github.com/theredditbandit/pman/pkg"
+	c "github.com/theredditbandit/pman/constants"
 	"github.com/theredditbandit/pman/pkg/db"
 )
 
@@ -44,7 +44,7 @@ func FilterByStatuses(data map[string]string, status []string) map[string]string
 // GetLastModifiedTime returns the last modified time
 func GetLastModifiedTime(dbname, pname string) string {
 	var lastModTime time.Time
-	pPath, err := db.GetRecord(dbname, pname, pkg.ProjectPaths)
+	pPath, err := db.GetRecord(dbname, pname, c.ProjectPaths)
 	if err != nil {
 		return "Something went wrong"
 	}
@@ -77,15 +77,15 @@ func BeautifyMD(data []byte) (string, error) {
 
 // ReadREADME: returns the byte array of README.md of a project
 func ReadREADME(dbname, projectName string) ([]byte, error) {
-	path, err := db.GetRecord(dbname, projectName, pkg.ProjectPaths)
+	path, err := db.GetRecord(dbname, projectName, c.ProjectPaths)
 	if err != nil {
-		actualName, err := db.GetRecord(dbname, projectName, pkg.ProjectAliasBucket)
+		actualName, err := db.GetRecord(dbname, projectName, c.ProjectAliasBucket)
 		if err != nil {
 			log.Printf("project: %v not a valid project\n", projectName)
 			return nil, errors.Join(ErrGetAlias, err)
 		}
 		projectName = actualName
-		path, err = db.GetRecord(dbname, projectName, pkg.ProjectPaths)
+		path, err = db.GetRecord(dbname, projectName, c.ProjectPaths)
 		if err != nil {
 			log.Printf("project: %v not a valid project\n", projectName)
 			return nil, errors.Join(ErrGetProject, err)
@@ -107,7 +107,7 @@ func ReadREADME(dbname, projectName string) ([]byte, error) {
 func UpdateLastEditedTime() error {
 	r := fmt.Sprint(time.Now().Unix())
 	rec := map[string]string{"lastRefreshTime": r}
-	err := db.WriteToDB(db.DBName, rec, pkg.ConfigBucket)
+	err := db.WriteToDB(db.DBName, rec, c.ConfigBucket)
 	if err != nil {
 		return err
 	}
