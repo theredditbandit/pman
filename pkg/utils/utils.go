@@ -75,27 +75,36 @@ func BeautifyMD(data []byte) (string, error) {
 	return out, nil
 }
 
-// ReadREADME: returns the byte array of README.md of a project
-func ReadREADME(dbname, projectName string) ([]byte, error) {
+// GetProjectPath: returns the path to the README inside the project
+func GetProjectPath(dbname, projectName string) (string, error) {
 	path, err := db.GetRecord(dbname, projectName, c.ProjectPaths)
 	if err != nil {
 		actualName, err := db.GetRecord(dbname, projectName, c.ProjectAliasBucket)
 		if err != nil {
 			log.Printf("project: %v not a valid project\n", projectName)
-			return nil, errors.Join(ErrGetAlias, err)
+			return "", errors.Join(ErrGetAlias, err)
 		}
 		projectName = actualName
 		path, err = db.GetRecord(dbname, projectName, c.ProjectPaths)
 		if err != nil {
 			log.Printf("project: %v not a valid project\n", projectName)
-			return nil, errors.Join(ErrGetProject, err)
+			return "", errors.Join(ErrGetProject, err)
 		}
 	}
 	pPath := filepath.Join(path, "README.md")
 	_, err = os.Stat(pPath)
-	if os.IsNotExist(err) {
-		msg := fmt.Sprintf("# README does not exist for %s", projectName)
-		return []byte(msg), nil
+	return pPath, err
+}
+
+// ReadREADME: returns the byte array of README.md of a project
+func ReadREADME(dbname, projectName string) ([]byte, error) {
+	pPath, err := GetProjectPath(dbname, projectName)
+	if err != nil {
+		if os.IsNotExist(err) {
+			msg := fmt.Sprintf("# README does not exist for %s", projectName)
+			return []byte(msg), nil
+		}
+		return nil, err
 	}
 	data, err := os.ReadFile(pPath)
 	if err != nil {
@@ -112,6 +121,7 @@ func UpdateLastEditedTime() error {
 		return err
 	}
 	return nil
+
 }
 
 func DayPassed(t string) bool {
