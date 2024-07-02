@@ -25,8 +25,8 @@ var (
 )
 
 func TitleCase(s string) string {
-	c := cases.Title(language.English)
-	return c.String(s)
+	t := cases.Title(language.English)
+	return t.String(s)
 }
 
 func FilterByStatuses(data map[string]string, status []string) map[string]string {
