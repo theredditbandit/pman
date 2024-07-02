@@ -10,6 +10,7 @@ import (
 
 	c "github.com/theredditbandit/pman/constants"
 	"github.com/theredditbandit/pman/pkg/db"
+	"github.com/theredditbandit/pman/pkg/utils"
 )
 
 var (
@@ -40,12 +41,14 @@ func InitDirs(args []string) error {
 		log.Print(err)
 		return ErrIndexDir
 	}
-	log.Printf("Indexed %d project directories . . .\n", len(projDirs))
+	fmt.Printf("Indexed %d project directories . . .\n", len(projDirs))
 	projectStatusMap := make(map[string]string)
 	projectPathMap := make(map[string]string)
+	projectLastModTimeMap := make(map[string]string)
 	for k, v := range projDirs { // k : full project path, v : project status ,
-		projectStatusMap[filepath.Base(k)] = v // filepath.Base(k) : project name
-		projectPathMap[filepath.Base(k)] = k
+		projectName := filepath.Base(k)
+		projectStatusMap[projectName] = v // filepath.Base(k) : project name
+		projectPathMap[projectName] = k
 	}
 	err = db.WriteToDB(db.DBName, projectStatusMap, c.StatusBucket)
 	if err != nil {
@@ -57,6 +60,20 @@ func InitDirs(args []string) error {
 		log.Print(err)
 		return err
 	}
+
+	for k := range projDirs {
+		projectName := filepath.Base(k)
+		t := utils.GetLastModifiedTime(db.DBName, projectName)
+		lastEdited, timestamp := utils.ParseTime(t)
+		projectLastModTimeMap[projectName] = fmt.Sprintf("%s-%d", lastEdited, timestamp)
+	}
+
+	err = db.WriteToDB(db.DBName, projectLastModTimeMap, c.LastUpdatedBucket)
+	if err != nil {
+		log.Print(err)
+		return err
+	}
+
 	lastEdit := make(map[string]string)
 	lastEdit["lastWrite"] = fmt.Sprint(time.Now().Format("02 Jan 06 15:04"))
 	err = db.WriteToDB(db.DBName, lastEdit, c.ConfigBucket)
