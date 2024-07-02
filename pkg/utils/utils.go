@@ -147,8 +147,3 @@ func ParseTime(tstr string) (string, int64) {
 	}
 	return tstr, timeStamp
 }
-
-// Director to changing cwd to whatever the project whatever the project directory is
-func Director(path string) error {
-	return nil
-}
