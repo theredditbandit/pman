@@ -40,6 +40,10 @@ var delCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
+		err = db.DeleteFromDb(db.DBName, projName, c.LastUpdatedBucket)
+		if err != nil {
+			return err
+		}
 		alias, err := db.GetRecord(db.DBName, projName, c.ProjectAliasBucket)
 		if err == nil {
 			err = db.DeleteFromDb(db.DBName, alias, c.ProjectAliasBucket)
