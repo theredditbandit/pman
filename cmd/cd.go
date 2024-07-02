@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 
 	"github.com/spf13/cobra"
+
 	"github.com/theredditbandit/pman/pkg/db"
 	"github.com/theredditbandit/pman/pkg/utils"
 )
@@ -33,11 +34,11 @@ var cdCmd = &cobra.Command{
 		}
 		cddir := filepath.Dir(pPath)
 		fmt.Printf("cddir: %v\n", cddir)
-		err = os.Chdir(cddir) // this approach does 
+		err = os.Chdir(cddir) // this approach does
 		if err != nil {
 			fmt.Println(err)
 		}
-        fmt.Println("this approach does not work because when pman is executed in a shell it is started in a new process and any directories changed withtin that process will not affect the directory of the process that was used to call pman cd in the first place, the only way to do this right is with a shell wrapper but i am not looking to add that to pman at the moment to it remains unfinished ")
+		fmt.Println("this approach does not work because when pman is executed in a shell it is started in a new process and any directories changed withtin that process will not affect the directory of the process that was used to call pman cd in the first place, the only way to do this right is with a shell wrapper but i am not looking to add that to pman at the moment to it remains unfinished ")
 		return nil
 	},
 }
