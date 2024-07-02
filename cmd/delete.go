@@ -8,6 +8,7 @@ import (
 
 	"github.com/spf13/cobra"
 
+	c "github.com/theredditbandit/pman/constants"
 	"github.com/theredditbandit/pman/pkg/db"
 )
 
@@ -25,27 +26,31 @@ var delCmd = &cobra.Command{
 			return ErrBadUsageDelCmd
 		}
 		projName := args[0]
-		_, err := db.GetRecord(db.DBName, projName, StatusBucket)
+		_, err := db.GetRecord(db.DBName, projName, c.StatusBucket)
 		if err != nil {
 			fmt.Printf("%s is not a valid project to be deleted\n", projName)
 			fmt.Println("Note : projects cannot be deleted using their alias")
 			return err
 		}
-		err = db.DeleteFromDb(db.DBName, projName, ProjectPathBucket)
+		err = db.DeleteFromDb(db.DBName, projName, c.ProjectPaths)
 		if err != nil {
 			return err
 		}
-		err = db.DeleteFromDb(db.DBName, projName, StatusBucket)
+		err = db.DeleteFromDb(db.DBName, projName, c.StatusBucket)
 		if err != nil {
 			return err
 		}
-		alias, err := db.GetRecord(db.DBName, projName, ProjectAliasBucket)
+		err = db.DeleteFromDb(db.DBName, projName, c.LastUpdatedBucket)
+		if err != nil {
+			return err
+		}
+		alias, err := db.GetRecord(db.DBName, projName, c.ProjectAliasBucket)
 		if err == nil {
-			err = db.DeleteFromDb(db.DBName, alias, ProjectAliasBucket)
+			err = db.DeleteFromDb(db.DBName, alias, c.ProjectAliasBucket)
 			if err != nil {
 				return err
 			}
-			err = db.DeleteFromDb(db.DBName, projName, ProjectAliasBucket)
+			err = db.DeleteFromDb(db.DBName, projName, c.ProjectAliasBucket)
 			if err != nil {
 				return err
 			}
@@ -56,7 +61,7 @@ var delCmd = &cobra.Command{
 		}
 		lastEdit := make(map[string]string)
 		lastEdit["lastWrite"] = fmt.Sprint(time.Now().Format("02 Jan 06 15:04"))
-		err = db.WriteToDB(db.DBName, lastEdit, ConfigBucket)
+		err = db.WriteToDB(db.DBName, lastEdit, c.ConfigBucket)
 		if err != nil {
 			log.Print(err)
 			return err

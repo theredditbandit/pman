@@ -8,6 +8,7 @@ import (
 
 	"github.com/spf13/cobra"
 
+	c "github.com/theredditbandit/pman/constants"
 	"github.com/theredditbandit/pman/pkg/db"
 )
 
@@ -28,7 +29,7 @@ avlpn or something smaller and use that to query pman`,
 		}
 		pname := args[0]
 		alias := args[1]
-		_, err := db.GetRecord(db.DBName, pname, StatusBucket)
+		_, err := db.GetRecord(db.DBName, pname, c.StatusBucket)
 		if err != nil {
 			fmt.Printf("%s project does not exist in db", pname)
 			return err
@@ -36,17 +37,17 @@ avlpn or something smaller and use that to query pman`,
 		fmt.Printf("Aliasing %s to %s \n", pname, alias)
 		data := map[string]string{alias: pname}
 		revData := map[string]string{pname: alias}
-		err = db.WriteToDB(db.DBName, data, ProjectAliasBucket)
+		err = db.WriteToDB(db.DBName, data, c.ProjectAliasBucket)
 		if err != nil {
 			return err
 		}
-		err = db.WriteToDB(db.DBName, revData, ProjectAliasBucket)
+		err = db.WriteToDB(db.DBName, revData, c.ProjectAliasBucket)
 		if err != nil {
 			return err
 		}
 		lastEdit := make(map[string]string)
 		lastEdit["lastWrite"] = fmt.Sprint(time.Now().Format("02 Jan 06 15:04"))
-		err = db.WriteToDB(db.DBName, lastEdit, ConfigBucket)
+		err = db.WriteToDB(db.DBName, lastEdit, c.ConfigBucket)
 		if err != nil {
 			log.Print(err)
 			return err

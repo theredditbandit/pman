@@ -10,7 +10,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
 
-	"github.com/theredditbandit/pman/pkg"
+	c "github.com/theredditbandit/pman/constants"
 	"github.com/theredditbandit/pman/pkg/db"
 	pgr "github.com/theredditbandit/pman/pkg/ui/pager"
 	"github.com/theredditbandit/pman/pkg/utils"
@@ -75,7 +75,7 @@ func RenderInteractiveTable(data map[string]string, refreshLastEditedTime bool) 
 			return err
 		}
 	} else {
-		rec, err := db.GetRecord(db.DBName, "lastRefreshTime", pkg.ConfigBucket)
+		rec, err := db.GetRecord(db.DBName, "lastRefreshTime", c.ConfigBucket)
 		if err != nil { // lastRefreshTime key does not exist in db
 			refreshLastEditedTime = true
 			err := utils.UpdateLastEditedTime()
@@ -93,17 +93,17 @@ func RenderInteractiveTable(data map[string]string, refreshLastEditedTime bool) 
 	}
 
 	for proj, status := range data {
-		alias, err := db.GetRecord(db.DBName, proj, pkg.ProjectAliasBucket)
+		alias, err := db.GetRecord(db.DBName, proj, c.ProjectAliasBucket)
 		if refreshLastEditedTime {
 			t := utils.GetLastModifiedTime(db.DBName, proj)
 			lastEdited, timestamp = utils.ParseTime(t)
 			rec := map[string]string{proj: fmt.Sprintf("%s-%d", lastEdited, timestamp)}
-			err := db.WriteToDB(db.DBName, rec, pkg.LastUpdatedBucket)
+			err := db.WriteToDB(db.DBName, rec, c.LastUpdatedBucket)
 			if err != nil {
 				return err
 			}
 		} else {
-			lE, err := db.GetRecord(db.DBName, proj, pkg.LastUpdatedBucket)
+			lE, err := db.GetRecord(db.DBName, proj, c.LastUpdatedBucket)
 			if err != nil {
 				return err
 			}
