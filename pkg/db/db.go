@@ -104,10 +104,12 @@ func GetRecord(dbname, key, bucketName string) (string, error) {
 	err = db.View(func(tx *bolt.Tx) error {
 		bucket := tx.Bucket([]byte(bucketName))
 		if bucket == nil {
+			// log.Println("bucket not found error", bucketName,"for key")
 			return ErrBucketNotFound
 		}
 		v := bucket.Get([]byte(key))
 		if v == nil {
+			// log.Println("key not found error", key)
 			return ErrKeyNotFound
 		}
 		rec = string(v)

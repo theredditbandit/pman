@@ -45,11 +45,11 @@ func RenderTable(data map[string]string, refreshLastEditedTime bool) error {
 		}
 	}
 	for p, status := range data {
-		log.Println("===============================================")
+		// log.Println("===============================================")
 		alias, err := db.GetRecord(db.DBName, p, c.ProjectAliasBucket)
-		log.Println("after get record func", "  err=", err)
-		log.Println("p=", p)
-		log.Println("status=", status)
+		// log.Println("after get record func", "  err=", err)
+		// log.Println("p=", p)
+		// log.Println("status=", status)
 		if refreshLastEditedTime {
 			t := utils.GetLastModifiedTime(db.DBName, p)
 			lastEdited, timestamp = utils.ParseTime(t)
@@ -59,7 +59,7 @@ func RenderTable(data map[string]string, refreshLastEditedTime bool) error {
 				return err
 			}
 		} else {
-			log.Println("b4 key nf error", "p=", p, "bucket=", c.LastUpdatedBucket)
+			// log.Println("b4 key nf error", "p=", p, "bucket=", c.LastUpdatedBucket)
 			lE, err := db.GetRecord(db.DBName, p, c.LastUpdatedBucket)
 			if err != nil {
 				log.Println("aftert key nf error")
@@ -74,7 +74,7 @@ func RenderTable(data map[string]string, refreshLastEditedTime bool) error {
 			timestamp = tstmp
 		}
 		if err == nil {
-			pname := fmt.Sprintf("%s (%s) nil error", p, alias)
+			pname := fmt.Sprintf("%s (%s)", p, alias)
 			row := []string{utils.TitleCase(status), pname, lastEdited, fmt.Sprint(timestamp)} // Status | projectName (alias) | lastEdited | timestamp
 			tableData = append(tableData, row)
 		} else {
