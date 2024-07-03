@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	c "github.com/theredditbandit/pman/constants"
@@ -23,7 +24,6 @@ var (
 // InitDirs indexes a directory for project directories and writes the data to the DB
 func InitDirs(args []string) error {
 	// the file which identifies a project directory
-	projIdentifier := "README.md"
 	if len(args) != 1 {
 		log.Print("Please provide a directory name")
 		return ErrDirname
@@ -36,7 +36,7 @@ func InitDirs(args []string) error {
 		log.Printf("%s is a file and not a directory \n", dirname)
 		return ErrIsNotDir
 	}
-	projDirs, err := indexDir(dirname, projIdentifier)
+	projDirs, err := indexDir(dirname)
 	if err != nil {
 		log.Print(err)
 		return ErrIndexDir
@@ -86,7 +86,8 @@ func InitDirs(args []string) error {
 }
 
 // indexDir indexes a directory for project directories
-func indexDir(path, identifier string) (map[string]string, error) {
+func indexDir(path string) (map[string]string, error) {
+	identifier := "readme"
 	projDirs := make(map[string]string)
 	err := filepath.Walk(path, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
@@ -98,12 +99,16 @@ func indexDir(path, identifier string) (map[string]string, error) {
 			projDirs[absPath] = "indexed"
 			return filepath.SkipDir
 		}
-		if !info.IsDir() && info.Name() == identifier {
-			pname := filepath.Dir(path)
-			absPath, _ := filepath.Abs(pname)
-			projDirs[absPath] = "indexed"
-			return filepath.SkipDir
+		if !info.IsDir() {
+			fileName := strings.ToLower(info.Name())
+			if strings.Contains(fileName, identifier) {
+				pname := filepath.Dir(path)
+				absPath, _ := filepath.Abs(pname)
+				projDirs[absPath] = "indexed"
+				return filepath.SkipDir
+			}
 		}
+
 		return nil
 	})
 	if err != nil {
