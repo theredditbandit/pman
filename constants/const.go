@@ -6,6 +6,6 @@ const (
 	ProjectPaths       = "projectPaths"
 	ProjectAliasBucket = "projectAliases"
 	ConfigBucket       = "config"
-	Version            = "1.1.0"
+	Version            = "1.1.1"
 	LastUpdatedBucket  = "lastUpdated"
 )
